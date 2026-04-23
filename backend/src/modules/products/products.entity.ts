@@ -8,4 +8,6 @@ export class Product {
   color: string;
   form: string;
   material: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

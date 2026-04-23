@@ -1,25 +1,96 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { Product } from './products.entity'
-import { TelegramService } from '../telegram/telegram.service'
-import { CrerateOrderDto } from './dto/create-order.dto'
-import { Order } from './orders.entity'
+import { Repository, In } from 'typeorm'
+import { TelegramService } from '../../integrations/telegram/telegram.service'
+import { CreateOrderDto } from './dto/create-order.dto'
+import { Order } from './order.entity'
+import { Product } from '../products/products.entity'
+
 @Injectable()
 export class OrdersService {
-  constructor(private telegramService: TelegramService) {}
+  constructor(
+    @InjectRepository(Order)
+    private ordersRepo: Repository<Order>,
 
-  async createOrder(orderData: CrerateOrderDto): Promise<Order> {
-    const order = new Order()
-    order.delivery = orderData.delivery
-    order.payment = orderData.payment
-    order.name = orderData.name
-    order.email = orderData.email
-    order.phone = orderData.phone
-    order.address = orderData.address
-    order.products = JSON.stringify(orderData.products)
-    order.total = orderData.total
-    await this.telegramService.sendOrderNotification(orderData)
-    return { message: 'Заказ отправлен' }
+    @InjectRepository(Product)
+    private productsRepo: Repository<Product>,
+
+    private telegramService: TelegramService,
+  ) {}
+
+  async create(dto: CreateOrderDto): Promise<Order> {
+    const productIds = dto.products.map(p => p.productId)
+
+    const products = await this.productsRepo.find({
+      where: { id: In(productIds) },
+    })
+
+    if (!products.length) {
+      throw new BadRequestException('Products not found')
+    }
+
+    let total = 0
+
+    const productsWithNames = dto.products.map(p => {
+      const product = products.find(x => x.id === p.productId)
+
+      if (!product) {
+        throw new BadRequestException(`Product ${p.productId} not found`)
+      }
+
+      const itemTotal = Number(product.price) * p.quantity
+      total += itemTotal
+
+      return {
+        name: product.name,
+        quantity: p.quantity,
+      }
+    })
+
+    const order = this.ordersRepo.create({
+      ...dto,
+      total,
+      status: 'new',
+    })
+
+    const savedOrder = await this.ordersRepo.save(order)
+
+    await this.telegramService.sendOrderNotification({
+      ...dto,
+      total,
+      products: productsWithNames,
+    })
+
+    return savedOrder
+  }
+
+  async findAll(): Promise<Order[]> {
+    return this.ordersRepo.find({
+      order: { createdAt: 'DESC' },
+    })
+  }
+
+  async findOne(id: string): Promise<Order> {
+    const order = await this.ordersRepo.findOne({ where: { id } })
+
+    if (!order) {
+      throw new NotFoundException('Order not found')
+    }
+
+    return order
+  }
+
+  async update(id: string, data: Partial<Order>): Promise<Order> {
+    const order = await this.findOne(id)
+
+    Object.assign(order, data)
+
+    return this.ordersRepo.save(order)
+  }
+
+  async remove(id: string): Promise<void> {
+    const order = await this.findOne(id)
+
+    await this.ordersRepo.remove(order)
   }
 }
