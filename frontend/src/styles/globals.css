@@ -1,15 +1,43 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Good Vibes Pro';
+  src:
+    url('/fonts/Good Vibes Pro.woff2') format('woff2'),
+    url('/fonts/Good Vibes Pro.woff') format('woff'),
+    url('/fonts/Good Vibes Pro.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  src:
+    url('/fonts/BebasNeue-Regular.woff2') format('woff2'),
+    url('/fonts/BebasNeue-Regular.woff') format('woff'),
+    url('/fonts/BebasNeue-Regular.ttf') format('truetype');
+}
+
 :root {
   --color-primary: #ad4075;
   --color-secondary: #e69abe;
   --color-accent: #f9ddea;
-  --cursive-font: Good Vibes Pro, cursive;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Roboto', sans-serif;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+.cursive, h2 {
+  font-family: 'Good Vibes Pro', sans-serif;
+} 
+.tall {
+  font-family: 'Bebas Neue', sans-serif;
+  transform: scaleY(1.1) scaleX(0.95);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  line-height: 1.25;
+}
+h2 {
+  font-size: 36px;
 }

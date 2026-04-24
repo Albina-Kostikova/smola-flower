@@ -1,11 +1,8 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { SearchBar } from '@/features/search/SearchBar'
-import logoImg from '@/shared/images/logosf.svg'
-import cartImg from '@/shared/images/cart.svg'
 
 const underNavItems = [
   { href: '/vazochki', label: 'Вазочки' },
@@ -47,17 +44,17 @@ export default function Header() {
         </button>
 
         <Link href="/">
-          <Image src={logoImg} className="h-13 w-25 object-contain" alt="Smola Flowers" priority />
+          <img src="./images/logosf.svg" className="h-13 w-25 object-contain" alt="Smola Flowers" priority />
         </Link>
 
         <Link href="/cart" className="p-2" aria-label="Корзина">
-          <Image src={cartImg} alt="Корзина" className="h-8 w-8" />
+          <img src="./images/cart.svg" alt="Корзина" className="h-8 w-8" />
         </Link>
       </div>
 
       <div className="hidden py-4 items-center justify-evenly gap-22 w-full bg-(--color-primary) lg:flex">
         <Link href="/">
-          <Image src={logoImg} className="w-25 h-13 contain" alt="Smola Flowers" priority />
+          <img src="./images/logosf.svg" className="w-25 h-13 contain" alt="Smola Flowers" priority />
         </Link>
         <div className="flex items-center gap-2 whitespace-nowrap text-white uppercase">
           {navItems.map(item => {
@@ -69,7 +66,7 @@ export default function Header() {
           })}
         </div>
         <button className="h-8 w-8 contain cursor-pointer">
-          <img src={cartImg.src} alt="Корзина" className="h-8 w-8 contain invert" />
+          <img src="./images/cart.svg" alt="Корзина" className="h-8 w-8 contain invert" />
         </button>
 
         <button

@@ -1,9 +1,6 @@
-import Image from 'next/image'
+
 import Link from 'next/link'
-import instagramImg from '@/shared/images/soc-instagram.svg'
-import phoneImg from '@/shared/images/soc-phone.svg'
-import emailImg from '@/shared/images/soc-email.svg'
-import logoImg from '@/shared/images/logosf.svg'
+
 
 const Footer = () => {
   const navItems = [
@@ -17,7 +14,7 @@ const Footer = () => {
   return (
     <footer className="flex flex-col gap-3 items-center justify-center py-5 border-t bg-(--color-primary) text-white">
       <Link href="/" className="text-xl font-semibold tracking-tight ">
-        <Image src={logoImg} alt="Smola Flowers" className="w-25 h-13 contain" />
+        <img src="./images/logosf.svg" alt="Smola Flowers" className="w-25 h-13 contain" />
       </Link>
       <div className="flex items-center gap-12 whitespace-nowrap text-white uppercase">
         {navItems.map(item => {
@@ -30,15 +27,15 @@ const Footer = () => {
       </div>
       <div className="flex items-center justify-center gap-10 mb-3 leading-6">
         <Link href="https://www.instagram.com/smola_flower" className="flex items-center gap-2">
-          <Image className="w-5 h-5 contain" src={instagramImg} alt="instagram" />
+          <img className="w-5 h-5 contain" src='./images/soc-instagram.svg' alt="instagram" />
           <p>@smola_flower</p>
         </Link>
         <Link href="tel:+79375962726" className="flex items-center gap-2">
-          <Image className="w-5 h-5 contain" src={phoneImg} alt="phone" />
+          <img className="w-5 h-5 contain" src='./images/soc-phone.svg' alt="phone" />
           <p>+7 (937) 596-27-26</p>
         </Link>
         <Link href="mailto:smola_flower@gmail.com" className="flex items-center gap-2">
-          <Image className="w-5 h-5 contain" src={emailImg} alt="email" />
+          <img className="w-5 h-5 contain" src='./images/soc-email.svg' alt="email" />
           <p>smola_flower@gmail.com</p>
         </Link>
       </div>
