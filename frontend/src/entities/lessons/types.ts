@@ -3,4 +3,5 @@ export class Lesson {
   img: string
   title: string
   description: string
+  price: number
 }
