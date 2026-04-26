@@ -1,37 +1,67 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { SupabaseService } from '../../database/supabase.service'
 import { Product } from './products.entity'
+
 @Injectable()
 export class ProductService {
-  constructor(
-    @InjectRepository(Product)
-    private productRepository: Repository<Product>,
-  ) {}
-  create() {
-    const product = this.productRepository.create({
-      img: 'https://example.com/image.jpg',
-      title: 'Example Product',
-      price: 19.99,
-      technic: 'Example Technic',
-      diameter: 'Example Diameter',
-      color: 'Example Color',
-      form: 'Example Form',
-      material: 'Example Material',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    return this.productRepository.save(product);
+  constructor(private supabaseService: SupabaseService) {}
+
+  async createProduct(productData: Product): Promise<Product> {
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('products')
+      .insert([productData])
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to create product: ${error.message}`)
+    }
+
+    return data as Product
   }
-  getAll() {
-    return this.productRepository.find();
+
+  async getAllProducts(): Promise<Product[]> {
+    const { data, error } = await this.supabaseService.getClient().from('products').select('*')
+
+    if (error) {
+      throw new Error(`Failed to fetch products: ${error.message}`)
+    }
+
+    return (data || []) as Product[]
   }
-  getById(id: string) {
-    return this.productRepository.findOneBy({ id });
+
+  async getProductById(id: string): Promise<Product> {
+    const { data, error } = await this.supabaseService.getClient().from('products').select('*').eq('id', id).single()
+
+    if (error || !data) {
+      throw new NotFoundException(`Product with id ${id} not found`)
+    }
+
+    return data as Product
   }
-  update(id: string, updateData: Partial<Product>) {
-    return this.productRepository.update(id, updateData);
+
+  async update(id: string, updateData: Partial<Product>): Promise<Product> {
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('products')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to update product: ${error.message}`)
+    }
+
+    return data as Product
   }
-  delete(id: string) {    return this.productRepository.delete(id);
+
+  async delete(id: string): Promise<void> {
+    const { error } = await this.supabaseService.getClient().from('products').delete().eq('id', id)
+
+    if (error) {
+      throw new Error(`Failed to delete product: ${error.message}`)
+    }
   }
 }

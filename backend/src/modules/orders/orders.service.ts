@@ -1,6 +1,5 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, In } from 'typeorm'
+import { SupabaseService } from '../../database/supabase.service'
 import { TelegramService } from '../../integrations/telegram/telegram.service'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { Order } from './order.entity'
@@ -9,30 +8,28 @@ import { Product } from '../products/products.entity'
 @Injectable()
 export class OrdersService {
   constructor(
-    @InjectRepository(Order)
-    private ordersRepo: Repository<Order>,
-
-    @InjectRepository(Product)
-    private productsRepo: Repository<Product>,
-
+    private supabaseService: SupabaseService,
     private telegramService: TelegramService,
   ) {}
 
   async create(dto: CreateOrderDto): Promise<Order> {
+    const client = this.supabaseService.getClient()
     const productIds = dto.products.map(p => p.productId)
 
-    const products = await this.productsRepo.find({
-      where: { id: In(productIds) },
-    })
+    // Fetch products by IDs
+    const { data: products, error: productsError } = await client
+      .from('products')
+      .select('*')
+      .in('id', productIds)
 
-    if (!products.length) {
+    if (productsError || !products || products.length === 0) {
       throw new BadRequestException('Products not found')
     }
 
     let total = 0
 
     const productsWithNames = dto.products.map(p => {
-      const product = products.find(x => x.id === p.productId)
+      const product = (products as Product[]).find(x => x.id === p.productId)
 
       if (!product) {
         throw new BadRequestException(`Product ${p.productId} not found`)
@@ -42,18 +39,27 @@ export class OrdersService {
       total += itemTotal
 
       return {
-        name: product.name,
+        name: product.title,
         quantity: p.quantity,
       }
     })
 
-    const order = this.ordersRepo.create({
+    const orderData = {
       ...dto,
       total,
       status: 'new',
-    })
+    }
 
-    const savedOrder = await this.ordersRepo.save(order)
+    // Insert order
+    const { data: savedOrder, error: orderError } = await client
+      .from('orders')
+      .insert([orderData])
+      .select()
+      .single()
+
+    if (orderError) {
+      throw new Error(`Failed to create order: ${orderError.message}`)
+    }
 
     await this.telegramService.sendOrderNotification({
       ...dto,
@@ -61,36 +67,67 @@ export class OrdersService {
       products: productsWithNames,
     })
 
-    return savedOrder
+    return savedOrder as Order
   }
 
   async findAll(): Promise<Order[]> {
-    return this.ordersRepo.find({
-      order: { createdAt: 'DESC' },
-    })
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('orders')
+      .select('*')
+      .order('createdAt', { ascending: false })
+
+    if (error) {
+      throw new Error(`Failed to fetch orders: ${error.message}`)
+    }
+
+    return (data || []) as Order[]
   }
 
   async findOne(id: string): Promise<Order> {
-    const order = await this.ordersRepo.findOne({ where: { id } })
+    const { data: order, error } = await this.supabaseService
+      .getClient()
+      .from('orders')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    if (!order) {
+    if (error || !order) {
       throw new NotFoundException('Order not found')
     }
 
-    return order
+    return order as Order
   }
 
   async update(id: string, data: Partial<Order>): Promise<Order> {
     const order = await this.findOne(id)
 
-    Object.assign(order, data)
+    const { data: updatedOrder, error } = await this.supabaseService
+      .getClient()
+      .from('orders')
+      .update(data)
+      .eq('id', id)
+      .select()
+      .single()
 
-    return this.ordersRepo.save(order)
+    if (error) {
+      throw new Error(`Failed to update order: ${error.message}`)
+    }
+
+    return updatedOrder as Order
   }
 
   async remove(id: string): Promise<void> {
     const order = await this.findOne(id)
 
-    await this.ordersRepo.remove(order)
+    const { error } = await this.supabaseService
+      .getClient()
+      .from('orders')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      throw new Error(`Failed to delete order: ${error.message}`)
+    }
   }
 }
