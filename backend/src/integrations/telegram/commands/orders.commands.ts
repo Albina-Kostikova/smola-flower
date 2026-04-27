@@ -1,12 +1,9 @@
-import { Command, Ctx } from 'nestjs-telegraf'
-import { Context } from 'telegraf'
 import { OrdersService } from '../../../modules/orders/orders.service'
 
 export class OrdersCommands {
   constructor(private ordersService: OrdersService) {}
 
-  @Command('orders_list')
-  async list(@Ctx() ctx: Context) {
+  async list(ctx: any) {
     const orders = await this.ordersService.findAll()
 
     const text = orders

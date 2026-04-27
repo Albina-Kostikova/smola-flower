@@ -14,13 +14,13 @@ const underNavItems = [
 ]
 const navItems = [
   { href: '/catalog', label: 'Каталог' },
-  { href: '/aboutProducts', label: 'Об украшениях' },
+  { href: '/about', label: 'Об украшениях' },
   { href: '/gallery', label: 'Галерея' },
   { href: '/delivery', label: 'Доставка и оплата' },
   { href: '/blog', label: 'Блог' },
   { href: '/courses', label: 'Обучение' },
 ]
-export default function Header() {
+export default function Header({ onCartClick }: { onCartClick: () => void }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function Header() {
             )
           })}
         </div>
-        <button className="h-8 w-8 contain cursor-pointer">
+        <button  onClick={onCartClick}className="h-8 w-8 contain cursor-pointer">
           <img src="./images/cart.svg" alt="Корзина" className="h-8 w-8 contain invert" />
         </button>
 
@@ -79,20 +79,25 @@ export default function Header() {
         </button>
       </div>
 
-      <nav className="bg-white sticky top-0 z-40 mx-auto hidden w-full items-center justify-center px-4 py-3 md:flex">
-        <div className="flex items-center">
-          {underNavItems.map(item => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="px-4 text-(--color-primary) text-base font-medium tracking-wide transition hover:text-pink-700 border-r border-pink-300 last:border-r-0">
-              {item.label}
-            </Link>
-          ))}
-        </div>
+      <nav className="bg-white sticky top-0 z-40 hidden w-full md:flex justify-center">
+  <div className="w-full max-w-7xl flex items-center justify-between px-4 py-3">
+    
+    <div className="flex items-center">
+      {underNavItems.map(item => (
+        <Link
+          key={item.href}
+          href={item.href}
+          className="px-6 text-(--color-primary) text-base font-medium tracking-wide transition hover:text-pink-700 border-r border-pink-300 last:border-r-0"
+        >
+          {item.label}
+        </Link>
+      ))}
+    </div>
 
-        <SearchBar />
-      </nav>
+    <SearchBar />
+    
+  </div>
+</nav>
 
       <div
         className={`fixed inset-0 z-50 bg-black/40 transition-opacity md:hidden ${

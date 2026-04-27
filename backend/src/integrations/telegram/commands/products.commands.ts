@@ -1,21 +1,25 @@
-import { Command, Ctx } from 'nestjs-telegraf'
-import { Context } from 'telegraf'
-import { ProductsService } from '../../../modules/products/products.service'
+import { ProductService } from '../../../modules/products/products.service'
 
 export class ProductsCommands {
-  constructor(private productsService: ProductsService) {}
+  constructor(private productsService: ProductService) {}
 
-  @Command('add_product')
-  async add(@Ctx() ctx: Context) {
-    const [, data] = ctx.message.text.split('/add_product ')
+  async add(ctx: any) {
+    const [, data] = ctx.message?.text?.split('/add_product ') || []
 
     const [name, price, image] = data.split('|')
 
-    await this.productsService.create({
-      name,
+    await this.productsService.createProduct({
+      id: Date.now().toString(),
+      img: image,
+      title: name,
       price: Number(price),
-      imageUrl: image,
-      description: '',
+      technic: '',
+      diameter: '',
+      color: '',
+      form: '',
+      material: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
 
     await ctx.reply('✅ Product added')

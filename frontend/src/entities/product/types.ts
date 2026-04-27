@@ -1,12 +1,10 @@
-export class Product {
-  id: string
-  img: string
+export interface Product {
+  id: number
   title: string
   price: number
-  technic: string
-  diameter: string
-  color: string
-  form: string
-  material: string
+  description: string
+  category: string
+  image: string
 }
+
 export type PartialProduct = Partial<Product>

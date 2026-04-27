@@ -5,7 +5,7 @@ import Link from 'next/link'
 const Footer = () => {
   const navItems = [
     { href: '/catalog', label: 'Каталог' },
-    { href: '/aboutProducts', label: 'Об украшениях' },
+    { href: '/about', label: 'Об украшениях' },
     { href: '/gallery', label: 'Галерея' },
     { href: '/delivery', label: 'Доставка и оплата' },
     { href: '/blog', label: 'Блог' },

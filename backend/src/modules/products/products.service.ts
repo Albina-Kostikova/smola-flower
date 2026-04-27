@@ -41,6 +41,14 @@ export class ProductService {
     return data as Product
   }
 
+  async create(productData: Partial<Product>): Promise<Product> {
+    return this.createProduct(productData as Product)
+  }
+
+  async findAll(): Promise<Product[]> {
+    return this.getAllProducts()
+  }
+
   async update(id: string, updateData: Partial<Product>): Promise<Product> {
     const { data, error } = await this.supabaseService
       .getClient()

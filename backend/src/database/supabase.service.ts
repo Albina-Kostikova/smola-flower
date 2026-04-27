@@ -10,7 +10,7 @@ export class SupabaseService {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL')
     const supabaseKey = this.configService.get<string>('SUPABASE_KEY')
 
-    this.supabase = createClient(supabaseUrl, supabaseKey)
+    this.supabase = createClient(supabaseUrl || '', supabaseKey || '')
   }
 
   getClient(): SupabaseClient {

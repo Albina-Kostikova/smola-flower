@@ -37,6 +37,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.025em;
   line-height: 1.25;
+  transform-origin: left;
 }
 h2 {
   font-size: 36px;

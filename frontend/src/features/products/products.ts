@@ -1,4 +1,4 @@
-import { Product } from '@/entities/product';
+import { Product } from '@/entities/product'
 
 export const products: Product[] = [
   {
@@ -7,7 +7,7 @@ export const products: Product[] = [
     price: 2200,
     description: 'Легкие серьги из смолы с цветочными лепестками.',
     category: 'Серьги',
-    image: '/file.svg',
+    image: '/images/product1.jpg',
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const products: Product[] = [
     price: 1800,
     description: 'Прозрачный кулон с натуральными травами.',
     category: 'Кулоны',
-    image: '/globe.svg',
+    image: '/images/product2.jpg',
   },
   {
     id: 3,
@@ -23,6 +23,6 @@ export const products: Product[] = [
     price: 2500,
     description: 'Ручная брошь с эффектом акварели.',
     category: 'Броши',
-    image: '/window.svg',
+    image: '/images/product3.jpg',
   },
-];
+]

@@ -1,13 +1,13 @@
 import { Update, Start, Command, Ctx, Action } from 'nestjs-telegraf'
 import { Context } from 'telegraf'
 import { OrdersService } from '../../modules/orders/orders.service'
-import { ProductsService } from '../../modules/products/products.service'
+import { ProductService } from '../../modules/products/products.service'
 
 @Update()
 export class TelegramUpdate {
   constructor(
     private ordersService: OrdersService,
-    private productsService: ProductsService,
+    private productsService: ProductService,
   ) {}
 
   @Start()
@@ -37,7 +37,7 @@ export class TelegramUpdate {
     const products = await this.productsService.findAll()
 
     const text = products
-      .map(p => `${p.id} | ${p.name} | ${p.price}€`)
+      .map((p: any) => `${p.id} | ${p.title} | ${p.price}€`)
       .join('\n')
 
     await ctx.reply(text || 'Нет товаров')
@@ -45,7 +45,7 @@ export class TelegramUpdate {
 
   @Action(/order_shipped_(.+)/)
   async shipped(@Ctx() ctx: Context) {
-    const id = ctx.match[1]
+    const id = (ctx as any).match?.[1]
 
     await this.ordersService.update(id, {
       status: 'shipped',
@@ -56,7 +56,7 @@ export class TelegramUpdate {
 
   @Action(/order_done_(.+)/)
   async done(@Ctx() ctx: Context) {
-    const id = ctx.match[1]
+    const id = (ctx as any).match?.[1]
 
     await this.ordersService.update(id, {
       status: 'done',
@@ -67,7 +67,7 @@ export class TelegramUpdate {
 
   @Action(/order_cancel_(.+)/)
   async cancel(@Ctx() ctx: Context) {
-    const id = ctx.match[1]
+    const id = (ctx as any).match?.[1]
 
     await this.ordersService.update(id, {
       status: 'canceled',

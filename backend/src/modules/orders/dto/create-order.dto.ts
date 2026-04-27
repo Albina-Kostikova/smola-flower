@@ -27,37 +27,37 @@ export enum PaymentMethod {
 class OrderProductDto {
   @IsString()
   @IsNotEmpty()
-  productId: string
+  productId!: string
 
   @IsNumber()
   @Min(1)
-  quantity: number
+  quantity!: number
 }
 
 export class CreateOrderDto {
   @IsString()
   @MinLength(2)
-  name: string
+  name!: string
 
   @IsEmail()
-  email: string
+  email!: string
 
   @IsString()
   @MinLength(5)
-  phone: string
+  phone!: string
 
   @IsString()
   @MinLength(5)
-  address: string
+  address!: string
 
   @IsEnum(DeliveryMethod)
-  delivery: DeliveryMethod
+  delivery!: DeliveryMethod
 
   @IsEnum(PaymentMethod)
-  payment: PaymentMethod
+  payment!: PaymentMethod
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OrderProductDto)
-  products: OrderProductDto[]
+  products!: OrderProductDto[]
 }
