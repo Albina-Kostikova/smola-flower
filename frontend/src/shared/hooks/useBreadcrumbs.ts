@@ -1,6 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { products } from "@/features/products"
 
 type BreadcrumbItem = {
   label: string
@@ -37,6 +38,16 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
 
   const breadcrumbs = segments.map((segment, index) => {
     const href = "/" + segments.slice(0, index + 1).join("/")
+    
+    if (segments[index - 1] === "catalog" && !isNaN(Number(segment))) {
+      const product = products.find(p => p.id === segment)
+      if (product) {
+        return {
+          label: product.category,
+          href,
+        }
+      }
+    }
 
     return {
       label: formatLabel(segment),

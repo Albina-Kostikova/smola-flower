@@ -2,13 +2,8 @@ import type { Product } from '@/entities/product'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
-/**
- * Получить все продукты с Supabase (через backend API)
- */
 export async function getAllProducts(): Promise<Product[]> {
-  const res = await fetch(`${API_URL}/api/products`, {
-    next: { revalidate: 60 }, // Кэш на 60 секунд
-  })
+  const res = await fetch(`${API_URL}/api/products`)
 
   if (!res.ok) {
     throw new Error(`Failed to fetch products: ${res.statusText}`)
@@ -17,13 +12,8 @@ export async function getAllProducts(): Promise<Product[]> {
   return res.json()
 }
 
-/**
- * Получить продукт по ID
- */
 export async function getProductById(id: string): Promise<Product> {
-  const res = await fetch(`${API_URL}/api/products/${id}`, {
-    next: { revalidate: 300 }, // Кэш на 5 минут
-  })
+  const res = await fetch(`${API_URL}/api/products/${id}`)
 
   if (!res.ok) {
     if (res.status === 404) {
@@ -35,9 +25,6 @@ export async function getProductById(id: string): Promise<Product> {
   return res.json()
 }
 
-/**
- * Поиск продуктов по фильтрам
- */
 export async function searchProducts(filters: {
   color?: string
   form?: string

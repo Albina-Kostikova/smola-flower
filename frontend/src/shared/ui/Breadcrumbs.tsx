@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useBreadcrumbs } from "@/shared/hooks/useBreadcrumbs"
+import { useBreadcrumbs } from "@/shared/hooks"
 
 export const Breadcrumbs = () => {
   const items = useBreadcrumbs()  

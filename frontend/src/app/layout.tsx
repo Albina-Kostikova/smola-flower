@@ -2,7 +2,6 @@
 import Header from '@/widgets/Header'
 import Footer from '@/widgets/Footer'
 import '../styles/globals.css'
-import { Breadcrumbs } from '@/shared/ui/Breadcrumbs'
 import { useState } from 'react'
 import { CartSection } from '@/features/cart/CartSection'
 

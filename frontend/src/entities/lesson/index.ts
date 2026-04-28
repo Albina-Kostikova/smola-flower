@@ -1,2 +1,2 @@
 export { LessonCard } from './LessonCard';
-export type { Lesson };
+export type { Lesson } from './types'

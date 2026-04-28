@@ -1,5 +1,4 @@
-// Product hooks
-export * from './useProducts'
 
-// Lesson hooks
+export * from './useProducts'
 export * from './useLessons'
+export * from './useBreadcrumbs'

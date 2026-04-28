@@ -1,5 +1,7 @@
+'use client'
+
 import { CartSection } from '@/features/cart'
 
 export default function CartPage() {
-  return <CartSection />
+  return <CartSection isOpen={true} onClose={() => {}} />
 }

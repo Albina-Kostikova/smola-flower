@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 type CartItem = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   price: number;
@@ -15,9 +15,9 @@ type CartItem = {
 type CartStore = {
   items: CartItem[];
   addToCart: (item: Omit<CartItem, 'quantity'>) => void;
-  removeFromCart: (id: number) => void;
-  increase: (id: number) => void;
-  decrease: (id: number) => void;
+  removeFromCart: (id: string) => void;
+  increase: (id: string) => void;
+  decrease: (id: string) => void;
   clearCart: () => void;
   recalc: (items: CartItem[]) => {
     totalCount: number;

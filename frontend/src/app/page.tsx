@@ -1,10 +1,9 @@
 import { ItemCard } from '@/entities/item/ItemCard'
-import { LessonCard } from '@/entities/lessons'
+import { LessonCard } from '@/entities/lesson'
 import { InfoButton, PinkButton } from '@/shared/ui/Buttons'
 import Link from 'next/link'
 
 export default function Home() {
-
   const lessons = [
     { id: 1, title: 'Урок 1', description: 'Описание урока 1', img: '/images/lesson1.jpg', price: 1000 },
     { id: 2, title: 'Урок 2', description: 'Описание урока 2', img: '/images/lesson2.jpg', price: 1500 },
@@ -42,62 +41,38 @@ export default function Home() {
         </div>
       </div>
       <div className="mt-8 flex flex-col items-center mb-37">
-  <h2>Галерея</h2>
+        <h2>Галерея</h2>
 
-  <p className="mt-8 mb-15 w-95 text-center text-base leading-6">
-    Посмотрите парочку видео о том, как получаются готовые изделия и как я упаковываю покупки. Фото популярных
-    товаров и новинок, а также отзывы покупателей и свеженькие акции.
-  </p>
+        <p className="mt-8 mb-15 w-95 text-center text-base leading-6">
+          Посмотрите парочку видео о том, как получаются готовые изделия и как я упаковываю покупки. Фото популярных
+          товаров и новинок, а также отзывы покупателей и свеженькие акции.
+        </p>
 
-  <div className="flex items-center justify-center h-161 w-full bg-(--color-secondary) py-8">
-    <div className="flex flex-wrap max-w-xl">
-      <Link href="/gallery/vazochki"  className="inline-block">
-        <img
-          src="./images/gallery-video-left.png"
-          alt="Вазочки видео"
-          className="w-135 h-75 mr-8"
-        />
-      </Link>
-      <Link href="/gallery/komplekty"  className="inline-block">
-        <img
-          src="./images/komplekty.png"
-          alt="Комплект"
-          className="w-64 h-64 mr-8 mt-8"
-        />
-      </Link>
-      <Link href="/gallery/broshi"  className="inline-block">
-        <img
-          src="./images/broshi.png"
-          alt="Брошь"
-          className="w-64 h-64 mt-8 mr-8"
-        />
-      </Link>
-    </div>
-    <div className="flex flex-wrap max-w-xl">
-      <Link href="/gallery/sergi"  className="inline-block">
-        <img
-          src="./images/gallery-right1.png"
-          alt="Серьги"
-          className="w-64 h-64 mr-8"
-        />
-      </Link>
-      <Link href="/gallery/tarelki"  className="inline-block">
-        <img
-          src="./images/gallery-right2.png"
-          alt="Тарелки"
-          className="w-64 h-64"
-        />
-      </Link>
-      <Link href="/gallery/kulon-video"  className="inline-block">
-        <img
-          src="./images/gallery-video-right.png"
-          alt="Кулон видео"
-          className="w-135 h-75 mt-8"
-        />
-      </Link>
-    </div>
-  </div>
-</div>
+        <div className="flex items-center justify-center h-161 w-full bg-(--color-secondary) py-8">
+          <div className="flex flex-wrap max-w-xl">
+            <Link href="/gallery/vazochki" className="inline-block">
+              <img src="./images/gallery-video-left.png" alt="Вазочки видео" className="w-135 h-75 mr-8" />
+            </Link>
+            <Link href="/gallery/komplekty" className="inline-block">
+              <img src="./images/komplekty.png" alt="Комплект" className="w-64 h-64 mr-8 mt-8" />
+            </Link>
+            <Link href="/gallery/broshi" className="inline-block">
+              <img src="./images/broshi.png" alt="Брошь" className="w-64 h-64 mt-8 mr-8" />
+            </Link>
+          </div>
+          <div className="flex flex-wrap max-w-xl">
+            <Link href="/gallery/sergi" className="inline-block">
+              <img src="./images/gallery-right1.png" alt="Серьги" className="w-64 h-64 mr-8" />
+            </Link>
+            <Link href="/gallery/tarelki" className="inline-block">
+              <img src="./images/gallery-right2.png" alt="Тарелки" className="w-64 h-64" />
+            </Link>
+            <Link href="/gallery/kulon-video" className="inline-block">
+              <img src="./images/gallery-video-right.png" alt="Кулон видео" className="w-135 h-75 mt-8" />
+            </Link>
+          </div>
+        </div>
+      </div>
       <div className="flex flex-col items-center px-10">
         <h2>Об украшениях</h2>
         <div className="flex items-center gap-7 mb-3 mt-15 leading-6">

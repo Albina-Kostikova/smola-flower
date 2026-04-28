@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { Lesson } from '@/entities/lessons'
+import type { Lesson } from '@/entities/lesson'
 import { getAllLessons, getLessonById, getLessonsByCategory, getLessonsByDifficulty } from '@/shared/api/lessons'
 
 export function useAllLessons() {

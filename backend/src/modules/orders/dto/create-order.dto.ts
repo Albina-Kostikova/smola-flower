@@ -8,6 +8,7 @@ import {
   MinLength,
   IsNotEmpty,
   IsEnum,
+  IsOptional,
 } from 'class-validator'
 
 import { Type } from 'class-transformer'
@@ -34,10 +35,28 @@ class OrderProductDto {
   quantity!: number
 }
 
-export class CreateOrderDto {
+class CartItemDto {
+  @IsNumber()
+  @Min(1)
+  id!: number
+
+  @IsString()
+  @IsNotEmpty()
+  title!: string
+
+  @IsNumber()
+  @Min(0)
+  price!: number
+
+  @IsNumber()
+  @Min(1)
+  quantity!: number
+}
+
+class CustomerDto {
   @IsString()
   @MinLength(2)
-  name!: string
+  fio!: string
 
   @IsEmail()
   email!: string
@@ -49,15 +68,56 @@ export class CreateOrderDto {
   @IsString()
   @MinLength(5)
   address!: string
+}
 
-  @IsEnum(DeliveryMethod)
-  delivery!: DeliveryMethod
+export class CreateOrderDto {
+  @IsString()
+  @MinLength(2)
+  @IsOptional()
+  name?: string
 
-  @IsEnum(PaymentMethod)
-  payment!: PaymentMethod
+  @IsEmail()
+  @IsOptional()
+  email?: string
+
+  @IsString()
+  @MinLength(5)
+  @IsOptional()
+  phone?: string
+
+  @IsString()
+  @MinLength(5)
+  @IsOptional()
+  address?: string
+
+  @IsString()
+  @IsOptional()
+  delivery?: string
+
+  @IsString()
+  @IsOptional()
+  payment?: string
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OrderProductDto)
-  products!: OrderProductDto[]
+  @IsOptional()
+  products?: OrderProductDto[]
+
+  // Поля для нового формата с фронтенда
+  @ValidateNested()
+  @Type(() => CustomerDto)
+  @IsOptional()
+  customer?: CustomerDto
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CartItemDto)
+  @IsOptional()
+  items?: CartItemDto[]
+
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  totalPrice?: number
 }
