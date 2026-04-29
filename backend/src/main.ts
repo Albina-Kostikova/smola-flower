@@ -2,9 +2,12 @@ import 'reflect-metadata'
 import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { AppModule } from './app.module'
+import { ConfigService } from '@nestjs/config'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+
+  const configService = app.get(ConfigService)
 
   app.enableCors({
     origin: [
@@ -15,6 +18,8 @@ async function bootstrap() {
     credentials: true,
   })
 
+  app.setGlobalPrefix('api')
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -23,7 +28,7 @@ async function bootstrap() {
     }),
   )
 
-  const port = process.env.PORT || 3001
+  const port = configService.get<number>('PORT') || 3001
   await app.listen(port)
   console.log(`Backend запущен на http://localhost:${port}`)
 }

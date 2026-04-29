@@ -2,13 +2,11 @@ import { ItemCard } from '@/entities/item/ItemCard'
 import { LessonCard } from '@/entities/lesson'
 import { InfoButton, PinkButton } from '@/shared/ui/Buttons'
 import Link from 'next/link'
+import { getAllLessons } from '@/shared/api'
 
-export default function Home() {
-  const lessons = [
-    { id: 1, title: 'Урок 1', description: 'Описание урока 1', img: '/images/lesson1.jpg', price: 1000 },
-    { id: 2, title: 'Урок 2', description: 'Описание урока 2', img: '/images/lesson2.jpg', price: 1500 },
-    { id: 3, title: 'Урок 3', description: 'Описание урока 3', img: '/images/lesson3.jpg', price: 2000 },
-  ]
+export default async function Home() {
+  const lessons = await getAllLessons()
+  
   const categories = [
     { title: 'Вазочки', img: './images/vazochki.jpg', src: './catalog#vazochki' },
     { title: 'Серьги', img: './images/sergi.png', src: './catalog#sergi' },

@@ -1,5 +1,5 @@
 import type { Note } from '@/entities/note'
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_URL = process.env.BACKEND_API_URL || 'http://localhost:3001'
 export async function getAllNotes(): Promise<Note[]> {
 
   const res = await fetch(`${API_URL}/api/notes`)

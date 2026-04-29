@@ -1,4 +1,4 @@
-import { CatalogSection } from '@/features/products'
+import { CatalogSection } from '@/features/products/CatalogSection'
 
 export default function ProductsPage() {
   return (

@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react'
 import { SearchBar } from '@/features/search/SearchBar'
 
 const underNavItems = [
-  { href: '/vazochki', label: 'Вазочки' },
-  { href: '/sergi', label: 'Серьги' },
-  { href: '/kulony', label: 'Кулоны' },
-  { href: '/komplekty', label: 'Комплекты' },
-  { href: '/broshi', label: 'Броши' },
-  { href: '/chasy-i-kartiny', label: 'Часы и картины' },
+  { href: '/catalog#vazochki', label: 'Вазочки' },
+  { href: '/catalog#sergi', label: 'Серьги' },
+  { href: '/catalog#kulony', label: 'Кулоны' },
+  { href: '/catalog#komplekty', label: 'Комплекты' },
+  { href: '/catalog#broshi', label: 'Броши' },
+  { href: '/catalog#suveniry', label: 'Часы и картины' },
 ]
 const navItems = [
   { href: '/catalog', label: 'Каталог' },
@@ -18,7 +18,7 @@ const navItems = [
   { href: '/gallery', label: 'Галерея' },
   { href: '/delivery', label: 'Доставка и оплата' },
   { href: '/blog', label: 'Блог' },
-  { href: '/courses', label: 'Обучение' },
+  { href: '/lessons', label: 'Обучение' },
 ]
 export default function Header({ onCartClick }: { onCartClick: () => void }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -44,7 +44,7 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
         </button>
 
         <Link href="/">
-          <img src="./images/logosf.svg" className="h-13 w-25 object-contain" alt="Smola Flowers" priority />
+          <img src="./images/logosf.svg" className="h-13 w-25 object-contain" alt="Smola Flowers"/>
         </Link>
 
         <Link href="/cart" className="p-2" aria-label="Корзина">
@@ -54,7 +54,7 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
 
       <div className="hidden py-4 items-center justify-evenly gap-22 w-full bg-(--color-primary) lg:flex">
         <Link href="/">
-          <img src="./images/logosf.svg" className="w-25 h-13 contain" alt="Smola Flowers" priority />
+          <img src="./images/logosf.svg" className="w-25 h-13 contain" alt="Smola Flowers"/>
         </Link>
         <div className="flex items-center gap-2 whitespace-nowrap text-white uppercase">
           {navItems.map(item => {

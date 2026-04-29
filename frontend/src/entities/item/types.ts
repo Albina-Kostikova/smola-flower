@@ -1,4 +1,4 @@
-export class Item {
+export interface Item {
   title: string
   img: string
   src: string

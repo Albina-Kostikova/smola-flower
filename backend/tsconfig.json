@@ -13,10 +13,10 @@
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "declaration": true,
-    "declarationMap": true,
+    "emitDeclarationOnly": false,
     "sourceMap": true,
     "incremental": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
     "paths": {

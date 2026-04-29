@@ -1,7 +1,10 @@
 export interface Lesson {
   id: string
-  img: string
   title: string
+  url: string
   description: string
+  img: string
   price: number
+  createdAt: Date
+  updatedAt: Date
 }

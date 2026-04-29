@@ -1,7 +1,6 @@
-"use client"
+'use client'
 
-import { usePathname } from "next/navigation"
-import { products } from "@/features/products"
+import { usePathname } from 'next/navigation'
 
 type BreadcrumbItem = {
   label: string
@@ -9,45 +8,30 @@ type BreadcrumbItem = {
 }
 
 const dictionary: Record<string, string> = {
-  catalog: "Каталог",
-  blog: "Блог",
-  about: "Об украшениях",
-  courses: "Обучение",
-  delivery: "Доставка",
-  gallery: "Галерея",
-  shoes: "Обувь",
-  flowers: "Цветы",
-  cart: "Корзина",
+  catalog: 'Каталог',
+  blog: 'Блог',
+  about: 'Об украшениях',
+  lessons: 'Обучение',
+  delivery: 'Доставка',
+  gallery: 'Галерея',
+  shoes: 'Обувь',
+  flowers: 'Цветы',
+  cart: 'Корзина',
 }
 
 const formatLabel = (segment: string): string => {
   const decoded = decodeURIComponent(segment)
 
-  return (
-    dictionary[decoded] ||
-    decoded
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase())
-  )
+  return dictionary[decoded] || decoded.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 }
 
 export const useBreadcrumbs = (): BreadcrumbItem[] => {
   const pathname = usePathname()
 
-  const segments = pathname.split("/").filter(Boolean)
+  const segments = pathname.split('/').filter(Boolean)
 
   const breadcrumbs = segments.map((segment, index) => {
-    const href = "/" + segments.slice(0, index + 1).join("/")
-    
-    if (segments[index - 1] === "catalog" && !isNaN(Number(segment))) {
-      const product = products.find(p => p.id === segment)
-      if (product) {
-        return {
-          label: product.category,
-          href,
-        }
-      }
-    }
+    const href = '/' + segments.slice(0, index + 1).join('/')
 
     return {
       label: formatLabel(segment),
@@ -55,8 +39,5 @@ export const useBreadcrumbs = (): BreadcrumbItem[] => {
     }
   })
 
-  return [
-    { label: "Главная", href: "/" },
-    ...breadcrumbs,
-  ]
+  return [{ label: 'Главная', href: '/' }, ...breadcrumbs]
 }

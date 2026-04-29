@@ -13,6 +13,7 @@ export class ProductsCommands {
       img: image,
       title: name,
       price: Number(price),
+      stock: true,
       technic: '',
       diameter: '',
       color: '',

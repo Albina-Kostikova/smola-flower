@@ -9,7 +9,7 @@ const Footer = () => {
     { href: '/gallery', label: 'Галерея' },
     { href: '/delivery', label: 'Доставка и оплата' },
     { href: '/blog', label: 'Блог' },
-    { href: '/courses', label: 'Обучение' },
+    { href: '/lessons', label: 'Обучение' },
   ]
   return (
     <footer className="flex flex-col gap-3 items-center justify-center py-5 border-t bg-(--color-primary) text-white">

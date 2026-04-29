@@ -104,7 +104,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
 
   return (
     <section onClick={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div onClick={e => e.stopPropagation()} className="w-full max-w-6xl rounded-4xl bg-white px-6 py-7">
+      <div onClick={e => e.stopPropagation()} className="w-full max-h-12/12 overflow-y-auto max-w-6xl rounded-4xl bg-white px-6 py-7">
         <div className="relative w-full flex items-center justify-center border-b border-gray-300 mb-8 pb-3">
           <h2>Корзина</h2>
           <button onClick={onClose} className="absolute right-4 h-8 w-8 cursor-pointer hover:opacity-70">
@@ -193,7 +193,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
           </div>
 
           <div>
-            <h3 className="tall tracking-wide scale-x-95 mb-4 scale-y-110">Выбранные товары</h3>
+            <h3 className="tall tracking-wide mb-2 scale-y-110">Выбранные товары</h3>
 
             <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
               {items.length === 0 ? (
@@ -238,7 +238,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                   </div>
                 </div>
                 <div className="flex flex-col justiffy-center items-center"><PinkButton onClick={handleSendOrder} text="Оформить заказ" className="mt-6" />
-                <p className="text-xs text-gray-600 mt-4 text-center">
+                <p className="text-xs max-w-100 text-gray-600 mt-4 text-center">
                   Нажимая на кнопку, вы подтверждаете, что ознакомились с{' '}
                   <a href="#" className="text-(--color-primary) underline">
                     политикой конфиденциальности
@@ -248,7 +248,8 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                     обработку своих персональных данных
                   </a>
                   .
-                </p></div>
+                </p>
+                </div>
                 
               </>
             )}

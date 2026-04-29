@@ -1,20 +1,47 @@
-import { products } from '@/features/products'
+'use client'
+
 import { Breadcrumbs } from '@/shared/ui/Breadcrumbs'
 import { PinkButton, SquareButton } from '@/shared/ui/Buttons'
-type Props = {
-  params: {
-    id: string
-  }
-}
+import { useState, useEffect } from 'react'
+import { getProductById } from '@/shared/api'
+import type { Product } from '@/entities/product'
 
-export default function ProductPage({ params }: Props) {
-  const productId = params.id
-  const product = products.find(item => item.id === productId)
+export default function ProductPage({ params }: { params: { id: string } }) {
+  const [product, setProduct] = useState<Product | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  if (!product) {
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const data = await getProductById(params.id)
+        setProduct(data)
+      } catch (err) {
+        console.error('Error fetching product:', err)
+        setError('Товар не найден')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchProduct()
+  }, [params.id])
+
+  if (isLoading) {
     return (
       <section className="mx-auto w-full max-w-6xl px-4 py-8">
-        <h1 className="text-2xl font-semibold text-(--color-primary)">Товар не найден</h1>
+        <Breadcrumbs />
+        <div className="flex justify-center items-center h-64">
+          <p>Загрузка...</p>
+        </div>
+      </section>
+    )
+  }
+
+  if (error || !product) {
+    return (
+      <section className="mx-auto w-full max-w-6xl px-4 py-8">
+        <Breadcrumbs />
+        <h1 className="text-2xl font-semibold text-(--color-primary)">{error || 'Товар не найден'}</h1>
       </section>
     )
   }

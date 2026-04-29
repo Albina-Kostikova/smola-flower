@@ -1,9 +1,11 @@
 import type { Product } from '@/entities/product'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || process.env.BACKEND_API_URL || 'http://localhost:3001'
 
 export async function getAllProducts(): Promise<Product[]> {
-  const res = await fetch(`${API_URL}/api/products`)
+  const res = await fetch(`${API_URL}/api/products`, {
+    next: { revalidate: 3600 }
+  })
 
   if (!res.ok) {
     throw new Error(`Failed to fetch products: ${res.statusText}`)
@@ -13,7 +15,9 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product> {
-  const res = await fetch(`${API_URL}/api/products/${id}`)
+  const res = await fetch(`${API_URL}/api/products/${id}`, {
+    cache: 'no-store'
+  })
 
   if (!res.ok) {
     if (res.status === 404) {
