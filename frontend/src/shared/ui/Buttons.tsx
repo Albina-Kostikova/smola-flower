@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 type ButtonProps = {
   text: string;
   onClick?: () => void; 
@@ -29,7 +31,7 @@ export function SquareButton({ text, onClick, className }: ButtonProps) {
 export function InfoButton({ text, onClick, className }: ButtonProps) {
   return (
     <button onClick={onClick} className={`w-fit h-10 flex justify-center cursor-pointer items-center px-5 py-2.5 text-sm text-gray-700 border-[1.5px] border-(--color-primary) rounded-4xl hover:bg-(--color-secondary) ${className}`}>
-      {text} <img src="/images/arrow.svg" alt="Стрелка" className="ml-2" />
+      {text} <Image src="/images/arrow.svg" alt="Стрелка" className="ml-2" width={26} height={8} />
     </button>
   )
 }

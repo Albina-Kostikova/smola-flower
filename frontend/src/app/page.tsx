@@ -3,18 +3,20 @@ import { LessonCard } from '@/entities/lesson'
 import { InfoButton, PinkButton } from '@/shared/ui/Buttons'
 import Link from 'next/link'
 import { getAllLessons } from '@/shared/api'
+import Image from 'next/image'
 
 export default async function Home() {
   const lessons = await getAllLessons()
-  
+
   const categories = [
-    { title: 'Вазочки', img: './images/vazochki.jpg', src: './catalog#vazochki' },
-    { title: 'Серьги', img: './images/sergi.png', src: './catalog#sergi' },
-    { title: 'Кулоны', img: './images/kulony.png', src: './catalog#kulony' },
-    { title: 'Комплекты', img: './images/komplekty.png', src: './catalog#komplekty' },
-    { title: 'Броши', img: './images/broshi.png', src: './catalog#broshi' },
-    { title: 'Часы и картины', img: './images/chasyikartiny.png', src: './catalog#chasyikartiny' },
+    { title: 'Вазочки', img: '/images/vazochki.jpg', src: '/catalog#vazochki' },
+    { title: 'Серьги', img: '/images/sergi.png', src: '/catalog#sergi' },
+    { title: 'Кулоны', img: '/images/kulony.png', src: '/catalog#kulony' },
+    { title: 'Комплекты', img: '/images/komplekty.png', src: '/catalog#komplekty' },
+    { title: 'Броши', img: '/images/broshi.png', src: '/catalog#broshi' },
+    { title: 'Часы и картины', img: '/images/chasyikartiny.png', src: '/catalog#suveniry' },
   ]
+
   return (
     <div>
       <div className="relative bg-[#1B1B27] h-120 w-full flex text-white px-20">
@@ -26,7 +28,7 @@ export default async function Home() {
           </p>
           <PinkButton text="В каталог" />
         </div>
-        <img src="./images/main-bg.png" className="absolute right-30 bottom-0 w-155 h-120" alt="plate" />
+        <Image src="/images/main-bg.png" className="absolute right-30 bottom-0" width={620} height={480} alt="plate" priority/>
       </div>
 
       <div className="py-20 px-10 flex flex-col items-center">
@@ -49,24 +51,24 @@ export default async function Home() {
         <div className="flex items-center justify-center h-161 w-full bg-(--color-secondary) py-8">
           <div className="flex flex-wrap max-w-xl">
             <Link href="/gallery/vazochki" className="inline-block">
-              <img src="./images/gallery-video-left.png" alt="Вазочки видео" className="w-135 h-75 mr-8" />
+              <img src="/images/gallery-video-left.png" alt="Вазочки видео" className="w-135 h-75 mr-8" />
             </Link>
             <Link href="/gallery/komplekty" className="inline-block">
-              <img src="./images/komplekty.png" alt="Комплект" className="w-64 h-64 mr-8 mt-8" />
+              <img src="/images/komplekty.png" alt="Комплект" className="w-64 h-64 mr-8 mt-8" />
             </Link>
             <Link href="/gallery/broshi" className="inline-block">
-              <img src="./images/broshi.png" alt="Брошь" className="w-64 h-64 mt-8 mr-8" />
+              <img src="/images/broshi.png" alt="Брошь" className="w-64 h-64 mt-8 mr-8" />
             </Link>
           </div>
           <div className="flex flex-wrap max-w-xl">
             <Link href="/gallery/sergi" className="inline-block">
-              <img src="./images/gallery-right1.png" alt="Серьги" className="w-64 h-64 mr-8" />
+              <img src="/images/gallery-right1.png" alt="Серьги" className="w-64 h-64 mr-8" />
             </Link>
             <Link href="/gallery/tarelki" className="inline-block">
-              <img src="./images/gallery-right2.png" alt="Тарелки" className="w-64 h-64" />
+              <img src="/images/gallery-right2.png" alt="Тарелки" className="w-64 h-64" />
             </Link>
             <Link href="/gallery/kulon-video" className="inline-block">
-              <img src="./images/gallery-video-right.png" alt="Кулон видео" className="w-135 h-75 mt-8" />
+              <img src="/images/gallery-video-right.png" alt="Кулон видео" className="w-135 h-75 mt-8" />
             </Link>
           </div>
         </div>
@@ -74,16 +76,16 @@ export default async function Home() {
       <div className="flex flex-col items-center px-10">
         <h2>Об украшениях</h2>
         <div className="flex items-center gap-7 mb-3 mt-15 leading-6">
-          <ItemCard item={{ title: 'Как это сделано', img: './images/kak-eto-sdelano.png', src: '/about' }} />
-          <ItemCard item={{ title: 'Из чего это сделано', img: './images/iz-chego.png', src: '/about' }} />
-          <ItemCard item={{ title: 'Правила хранения', img: './images/pravila-hraneniya.png', src: '/about' }} />
+          <ItemCard item={{ title: 'Как это сделано', img: '/images/kak-eto-sdelano.png', src: '/about' }} />
+          <ItemCard item={{ title: 'Из чего это сделано', img: '/images/iz-chego.png', src: '/about' }} />
+          <ItemCard item={{ title: 'Правила хранения', img: '/images/pravila-hraneniya.png', src: '/about' }} />
         </div>
       </div>
 
       <div className="flex flex-col justiy-center items-center mt-37">
         <h2>Блог</h2>
         <div className="flex mt-5 h-97 gap-13 justify-center items-start">
-          <img src="./images/flower1.svg" alt="flower1" className="w-77 h-90" />
+          <Image src="/images/flower1.svg" alt="flower1" width={308} height={360} />
           <div className="flex flex-col w-88 items-start justify-between">
             <p className="text-(--color-secondary) text-sm">23 сентября 2020</p>
             <h4 className="tall scale-x-85 origin-left text-2xl tracking-wider mt-5 mb-4">О работе под заказ</h4>
@@ -94,10 +96,10 @@ export default async function Home() {
             </p>
             <InfoButton text="Продолжить чтение" />
           </div>
-          <img src="./images/phone-blog.png" alt="Чехол" className="w-85 h-85" />
+          <Image src="/images/phone-blog.png" alt="Чехол" width={340} height={340} />
         </div>
         <div className="flex mt-20 h-97 gap-13 justify-center items-start">
-          <img src="./images/experement-blog.png" alt="Эксперементы" className="w-85 h-85" />
+          <Image src="/images/experement-blog.png" alt="Эксперементы" width={340} height={340} />
           <div className="flex flex-col w-88 items-start justify-between">
             <p className="text-(--color-secondary) text-sm">25 октября 2020</p>
             <h4 className="tall scale-x-85 origin-left text-2xl tracking-wider mt-5 mb-4">мои эксперименты</h4>
@@ -108,7 +110,7 @@ export default async function Home() {
             </p>
             <InfoButton text="Продолжить чтение" />
           </div>
-          <img src="./images/flower2.svg" alt="flower2" className="w-77 h-87" />
+          <Image src="/images/flower2.svg" alt="flower2" width={308} height={360} />
         </div>
       </div>
 
@@ -117,7 +119,7 @@ export default async function Home() {
         <div className="w-full flex bg-(--color-secondary) gap-7 py-15 justify-center">
           <div className="relative rounded-4xl w-87 h-87 flex flex-col items-center bg-white py-11 gap-5">
             <div className="absolute left-2 -top-5 text-[175px] text-(--color-secondary) tall font-thin">1</div>
-            <img src="./images/oplata.svg" alt="Оплата" className="w-19 h-18 mb-5" />
+            <Image src="/images/oplata.svg" alt="Оплата" className="mb-5" width={76} height={72} />
             <h6 className="mb-1 tall text-2xl scale-x-90">ОПЛАТА</h6>
             <div className="w-47 flex flex-col text-center text-base leading-5 gap-3">
               <p>Нажмите кнопку “Купить”</p>
@@ -127,7 +129,7 @@ export default async function Home() {
           </div>
           <div className="relative rounded-4xl w-87 h-87 flex flex-col items-center bg-white py-11 gap-5">
             <div className="absolute left-2 -top-5 text-[175px] text-(--color-secondary) tall font-thin">2</div>
-            <img src="./images/avtorizatsiya.svg" alt="Авторизация" className="w-18 h-18 mb-5" />
+            <Image src="/images/avtorizatsiya.svg" alt="Авторизация" width={72} height={72} />
             <h6 className="mb-1 tall text-2xl scale-x-90">АВТОРИЗАЦИЯ</h6>
             <div className="w-47 flex flex-col text-center text-base leading-5 gap-3">
               <p>Укажите своё имя</p>
@@ -137,7 +139,7 @@ export default async function Home() {
           </div>
           <div className="relative rounded-4xl w-87 h-87 flex flex-col items-center bg-white py-11 gap-5">
             <div className="absolute left-2 -top-5 text-[175px] text-(--color-secondary) tall font-thin">3</div>
-            <img src="./images/dostup.svg" alt="Доступ" className="w-19 h-19 mb-5" />
+            <Image src="/images/dostup.svg" alt="Доступ" className="mb-5" width={76} height={76} />
             <h6 className="mb-1 tall text-2xl scale-x-90">ДОСТУП</h6>
             <div className="w-50 flex flex-col text-center text-base leading-5 gap-3">
               <p>Получите ссылку на видео</p>

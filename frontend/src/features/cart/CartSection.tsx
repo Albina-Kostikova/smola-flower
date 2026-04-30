@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useCartStore } from './cart.store'
 import { PinkButton } from '@/shared/ui/Buttons'
+import Image from 'next/image'
+
 type CartSectionProps = {
   isOpen: boolean
   onClose: () => void
@@ -87,7 +89,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
 
       const result = await response.json()
       console.log('Заказ успешно отправлен:', result)
-      
+
       clearCart()
       setFormData({ fio: '', email: '', phone: '', address: '' })
       alert('Заказ успешно оформлен! Скоро с вами свяжется администратор.')
@@ -100,15 +102,15 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
     }
   }
 
-
-
   return (
     <section onClick={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div onClick={e => e.stopPropagation()} className="w-full max-h-12/12 overflow-y-auto max-w-6xl rounded-4xl bg-white px-6 py-7">
+      <div
+        onClick={e => e.stopPropagation()}
+        className="w-full max-h-12/12 overflow-y-auto max-w-6xl rounded-4xl bg-white px-6 py-7">
         <div className="relative w-full flex items-center justify-center border-b border-gray-300 mb-8 pb-3">
           <h2>Корзина</h2>
           <button onClick={onClose} className="absolute right-4 h-8 w-8 cursor-pointer hover:opacity-70">
-            <img src="./images/cart-close.svg" alt="Закрыть" className="h-8 w-8" />
+            <Image src="/images/cart-close.svg" alt="Закрыть" width={32} height={32} />
           </button>
         </div>
 
@@ -201,10 +203,12 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
               ) : (
                 items.map(item => (
                   <div key={item.id} className="border-t border-gray-300 pt-4 flex items-center justify-between">
-                    <img
-                      src={item.image || './images/placeholder.png'}
+                    <Image
+                      src={item.img}
                       alt={item.title}
-                      className="h-20 w-20 rounded-2xl object-cover"
+                      className="rounded-2xl object-cover"
+                      width={80}
+                      height={80}
                     />
                     <div className="ml-4 flex-1">
                       <h4 className="font-semibold">{item.title}</h4>
@@ -214,7 +218,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                       <p className="font-semibold">{item.price * item.quantity} ₽</p>
                     </div>
                     <button onClick={() => removeFromCart(item.id)} title="Удалить" className="ml-4 hover:opacity-70">
-                      <img alt="Удалить" src="./images/cart-close.svg" className="h-6 w-6" />
+                      <Image alt="Удалить" src="/images/cart-close.svg" width={24} height={24} />
                     </button>
                   </div>
                 ))
@@ -230,27 +234,27 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                   </div>
                   <div className="border-t border-gray-300 flex justify-between py-2">
                     <span>Доставка:</span>
-                    <span>{delivery === 'Самовывоз по Бугульме'? 'бесплатно' : '200 ₽' }</span>
+                    <span>{delivery === 'Самовывоз по Бугульме' ? 'бесплатно' : '200 ₽'}</span>
                   </div>
                   <div className="border-t border-gray-300 pt-4 flex justify-between font-bold text-lg">
                     <span>Итого:</span>
                     <span>{delivery !== 'Самовывоз по Бугульме' ? totalPrice + 200 : totalPrice} ₽</span>
                   </div>
                 </div>
-                <div className="flex flex-col justiffy-center items-center"><PinkButton onClick={handleSendOrder} text="Оформить заказ" className="mt-6" />
-                <p className="text-xs max-w-100 text-gray-600 mt-4 text-center">
-                  Нажимая на кнопку, вы подтверждаете, что ознакомились с{' '}
-                  <a href="#" className="text-(--color-primary) underline">
-                    политикой конфиденциальности
-                  </a>{' '}
-                  и даете согласие на{' '}
-                  <a href="#" className="text-(--color-primary) underline">
-                    обработку своих персональных данных
-                  </a>
-                  .
-                </p>
+                <div className="flex flex-col justiffy-center items-center">
+                  <PinkButton onClick={handleSendOrder} text="Оформить заказ" className="mt-6" />
+                  <p className="text-xs max-w-100 text-gray-600 mt-4 text-center">
+                    Нажимая на кнопку, вы подтверждаете, что ознакомились с{' '}
+                    <a href="#" className="text-(--color-primary) underline">
+                      политикой конфиденциальности
+                    </a>{' '}
+                    и даете согласие на{' '}
+                    <a href="#" className="text-(--color-primary) underline">
+                      обработку своих персональных данных
+                    </a>
+                    .
+                  </p>
                 </div>
-                
               </>
             )}
           </div>

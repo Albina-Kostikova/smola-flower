@@ -1,13 +1,14 @@
 import { Breadcrumbs } from '@/shared/ui/Breadcrumbs'
+import Image from 'next/image'
 
 export default function AboutPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8">
       <Breadcrumbs />
-      <div className="flex flex-col gap-10 items-start justify-start">
+      <div className="flex flex-col gap-10 items-start justify-start mb-10">
         <div className="flex gap-6 items-between justify-start">
-          <img src="./images/kak-eto-sdelano.png" alt="" className="w-111" />
-          <div className="flex flex-col gap-5">
+          <Image src="/images/kak-eto-sdelano.png" alt="Как это сделано" width={445} height={475}/>
+          <div className="flex flex-col gap-5 py-2">
             <h2 className="tall  scale-x-95 tracking-wide">как это сделано ?</h2>
             <p>
               Опишу некоторые способы изготовления украшений и сувениров.<br /><br />Украшения состоят из двух частей: заготовка
@@ -22,8 +23,8 @@ export default function AboutPage() {
           </div>
         </div>
         <div className="flex gap-6">
-          <img src="./images/iz-chego.png" alt="" className="w-111" />
-          <div className="flex flex-col gap-5">
+          <Image src="/images/iz-chego.png" alt="Из чего это сделано" width={445} height={475} />
+          <div className="flex flex-col gap-5 py-2">
             <h2 className="tall  scale-x-95 tracking-wide">Из чего это сделано ?</h2>
             <p>
               Заготовки никак не опасны и не вызывают аллергию. Смола специальная ювелирная, ничего общего со
@@ -38,8 +39,8 @@ export default function AboutPage() {
           </div>
         </div>
         <div className="flex gap-6">
-          <img src="./images/pravila-hraneniya.png" alt="" className="w-111" />
-          <div className="flex flex-col gap-5">
+          <Image src="/images/pravila-hraneniya.png" alt="Правила хранения" width={445} height={475} />
+          <div className="flex flex-col gap-5 py-2">
             <h2 className="tall scale-x-95 tracking-wide">Правила хранения</h2>
             <p className="">
               Спирт и растворитель могут повредить глянцевую поверхность. Не храните рядом с моющими средствами и

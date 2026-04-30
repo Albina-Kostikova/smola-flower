@@ -5,6 +5,8 @@ import { PinkButton, SquareButton } from '@/shared/ui/Buttons'
 import { useState, useEffect } from 'react'
 import { getProductById } from '@/shared/api'
 import type { Product } from '@/entities/product'
+import { ViewedProducts } from '@/features/viewedProducts/viewedProducts'
+import Image from 'next/image'
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<Product | null>(null)
@@ -25,12 +27,13 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     }
     fetchProduct()
   }, [params.id])
-
+  
   if (isLoading) {
     return (
       <section className="mx-auto w-full max-w-6xl px-4 py-8">
         <Breadcrumbs />
-        <div className="flex justify-center items-center h-64">
+        <div className="flex flex-col justify-center items-center h-64">
+          <Image src="/images/spiner.svg" alt="Loading..." width={200} height={200}/>
           <p>Загрузка...</p>
         </div>
       </section>
@@ -45,22 +48,26 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       </section>
     )
   }
-
+  const breadcrumbs = [
+    { label: 'Главная', href: '/' },
+    { label: 'Каталог', href: '/catalog' },
+    { label: product.title, href: `/catalog/${product.id}` },
+  ]
   return (
     <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-8">
-      <Breadcrumbs />
+      <Breadcrumbs items={breadcrumbs}/>
       <div className="flex">
-        <div className="flex">
-          <img src={product.img} alt={product.title} className="w-88 h-88 object-cover rounded-4xl" />
-          <div className="flex flex-col">
-            <img src={product.img2} alt="Фото 2" className="w-43"/>
-            <img src={product.img3} alt="Фото 3" className="w-43"/>
+        <div className="flex mr-8">
+          <Image src={product.img} alt={product.title} className="mr-4 object-cover rounded-4xl" width={350} height={350}/>
+          <div className="flex flex-col gap-4">
+            <Image src={product.img2 || product.img} alt="Фото 2" width={174} height={168}/>
+            <Image src={product.img3 || product.img} alt="Фото 3"  width={174} height={168}/>
           </div>
         </div>
         <div className="flex flex-col border border-gray-300 rounded-2xl p-9 leading-9">
           <h1 className="text-3xl font-semibold">{product.title}</h1>
           <div className="flex items-center gap-12 py-7">
-            <h3>{product.price} ₽</h3>
+            <h3 className="tall text-4xl">{product.price} <span className="text-2xl">₽</span></h3>
             <SquareButton text={product.stock === true ? "В наличии" : "На заказ"} />
           </div>
           <p><b>Техника исполнения:</b> {product.technic}</p>
@@ -76,7 +83,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       <h3>Похожие товары</h3>
       <div></div>
       <h3>Вы смотрели ранее</h3>
-      <div></div>
+      <div>
+        <ViewedProducts product={product}/>
+      </div>
     </section>
   )
 }

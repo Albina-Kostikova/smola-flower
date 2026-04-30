@@ -1,10 +1,11 @@
+'use client'
 import { LessonCard } from '@/entities/lesson'
 import { Breadcrumbs } from '@/shared/ui/Breadcrumbs'
 import { getAllLessons } from '@/shared/api'
 
 export default async function LessonsPage() {
   const lessons = await getAllLessons()
-
+  
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-8">
       <Breadcrumbs />

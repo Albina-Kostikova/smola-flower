@@ -3,8 +3,8 @@ export interface Product {
   title: string
   price: number
   description?: string
-  category?: string
-  img?: string
+  category: string
+  img: string
   img2?: string
   img3?: string
   technic?: string

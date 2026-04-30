@@ -2,13 +2,18 @@
 
 import Link from "next/link"
 import { useBreadcrumbs } from "@/shared/hooks"
-
-export const Breadcrumbs = () => {
-  const items = useBreadcrumbs()  
+type BreadcrumbItem = {
+  label: string
+  href: string
+}
+export const Breadcrumbs = ({ items }: { items?: BreadcrumbItem[] }) => { 
+  const autoItems = useBreadcrumbs()
+  const finalItems = items ?? autoItems
   return (
     <nav className="flex items-center text-sm text-gray-500 mb-10">
-      {items.map((item, index) => {
-        const isLast = index === items.length - 1
+       {finalItems.map((item, index) => {
+        const isLast = index === finalItems.length - 1
+
 
         return (
           <span key={item.href} className="flex items-center">

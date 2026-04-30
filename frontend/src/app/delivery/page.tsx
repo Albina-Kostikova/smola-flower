@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/shared/ui/Breadcrumbs";
+import Image from 'next/image'
 
 export default function DeliveryPage() {
   return (
@@ -28,7 +29,7 @@ export default function DeliveryPage() {
 после предоплаты.</p>
         </div>
         <div className="flex flex-col justify-between max-w-111">
-          <img src="/images/delivery.png" alt="Карта" className="w-111"/>
+          <Image src="/images/delivery.png" alt="Карта" width={444} height={320}/>
           <p className="text-gray-700">Срок сбора и отправки посылки — 3 рабочих дня.
 Сроки ориентировочные и для вашего города они могут 
 немного уменьшаться или увеличиваться.</p>

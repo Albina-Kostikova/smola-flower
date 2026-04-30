@@ -5,6 +5,7 @@ import { PinkButton } from '@/shared/ui/Buttons'
 import { useState, useEffect } from 'react'
 import { getLessonById } from '@/shared/api'
 import type { Lesson } from '@/entities/lesson'
+import Image from 'next/image'
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:3001'
 
@@ -91,20 +92,26 @@ export default function LessonPage({ params }: { params: { id: string }}) {
     return (
       <div className="flex flex-col mx-auto max-w-6xl mb-25 mt-10">
         <Breadcrumbs />
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-semibold">{error || 'Загрузка...'}</h2>
+        <div className="flex flex-col justify-center items-center h-64">
+          <Image src="/images/spiner.svg" alt="Loading..." width={200} height={200}/>
+          <p>{ error || 'Загрузка...'}</p>
         </div>
       </div>
     )
   }
+    const breadcrumbs = [
+    { label: 'Главная', href: '/' },
+    { label: 'Обучение', href: '/lessons' },
+    { label: lesson.title, href: `/lessons/${lesson.id}` },
+  ]
 
   return (
     <div className="flex flex-col mx-auto max-w-6xl mb-25 mt-10">
-    <Breadcrumbs />
+    <Breadcrumbs items={breadcrumbs}/>
     <div className="flex flex-col items-center justify-center">
       <h2 className="tall text-xl font-light mb-10">Учебное видео "{lesson.title}"</h2>
       <div className="flex">
-        <img src={lesson.img} alt="Картинка урока" className=" object-cover rounded-4xl mr-8"/>
+        <Image src={lesson.img} alt="Картинка урока" className="object-cover rounded-4xl mr-8" width={350} height={280}/>
         <div className="flex flex-col gap-5">
           <input 
           className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
@@ -131,7 +138,7 @@ export default function LessonPage({ params }: { params: { id: string }}) {
           onChange={handleInputChange} 
           />
           <div className="flex gap-2.5 mt-12">
-            <img src="/images/chain.svg" alt="" className="w-12 h-12" />
+            <Image src="/images/chain.svg" alt="" width={50} height={50}/>
             <p>
               После отправки заявки администратор свяжется с Вами для оплаты, затем на указанную Вами почту придет ссылка на
               видео.

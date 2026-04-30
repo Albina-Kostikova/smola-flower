@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { SearchBar } from '@/features/search/SearchBar'
+import Image from 'next/image'
 
 const underNavItems = [
   { href: '/catalog#vazochki', label: 'Вазочки' },
@@ -44,17 +45,33 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
         </button>
 
         <Link href="/">
-          <img src="./images/logosf.svg" className="h-13 w-25 object-contain" alt="Smola Flowers"/>
+          <Image
+            src="/images/logosf.svg"
+            className="object-contain"
+            alt="Smola Flowers"
+            width={100}
+            height={52}
+            loading="eager"
+            priority
+          />
         </Link>
 
         <Link href="/cart" className="p-2" aria-label="Корзина">
-          <img src="./images/cart.svg" alt="Корзина" className="h-8 w-8" />
+          <Image src="/images/cart.svg" alt="Корзина" width={32} height={32} />
         </Link>
       </div>
 
       <div className="hidden py-4 items-center justify-evenly gap-22 w-full bg-(--color-primary) lg:flex">
         <Link href="/">
-          <img src="./images/logosf.svg" className="w-25 h-13 contain" alt="Smola Flowers"/>
+          <Image
+            src="/images/logosf.svg"
+            className="contain"
+            alt="Smola Flowers"
+            width={100}
+            height={52}
+            loading="eager"
+            priority
+          />
         </Link>
         <div className="flex items-center gap-2 whitespace-nowrap text-white uppercase">
           {navItems.map(item => {
@@ -65,8 +82,15 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
             )
           })}
         </div>
-        <button  onClick={onCartClick}className="h-8 w-8 contain cursor-pointer">
-          <img src="./images/cart.svg" alt="Корзина" className="h-8 w-8 contain invert" />
+        <button onClick={onCartClick} className="h-8 w-8 contain cursor-pointer">
+          <Image
+            src="/images/cart.svg"
+            alt="Корзина"
+            className="contain invert"
+            width={32}
+            height={32}
+            loading="eager"
+          />
         </button>
 
         <button
@@ -80,24 +104,21 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
       </div>
 
       <nav className="bg-white sticky top-0 z-40 hidden w-full md:flex justify-center">
-  <div className="w-full max-w-7xl flex items-center justify-between px-4 py-3">
-    
-    <div className="flex items-center">
-      {underNavItems.map(item => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className="px-6 text-(--color-primary) text-base font-medium tracking-wide transition hover:text-pink-700 border-r border-pink-300 last:border-r-0"
-        >
-          {item.label}
-        </Link>
-      ))}
-    </div>
+        <div className="w-full max-w-7xl flex items-center justify-between px-4 py-3">
+          <div className="flex items-center">
+            {underNavItems.map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="px-6 text-(--color-primary) text-base font-medium tracking-wide transition hover:text-pink-700 border-r border-pink-300 last:border-r-0">
+                {item.label}
+              </Link>
+            ))}
+          </div>
 
-    <SearchBar />
-    
-  </div>
-</nav>
+          <SearchBar />
+        </div>
+      </nav>
 
       <div
         className={`fixed inset-0 z-50 bg-black/40 transition-opacity md:hidden ${

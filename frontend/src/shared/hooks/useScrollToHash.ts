@@ -1,18 +1,34 @@
 'use client'
+
 import { useEffect } from 'react'
 
-export const useScrollToHash = () => {
+export const useScrollToHash = (isLoading: boolean) => {
   useEffect(() => {
-    const hash = window.location.hash.replace('#', '')
+  if (isLoading) return
 
-    if (!hash) return
+  const hash = window.location.hash.replace('#', '')
+  if (!hash) return
 
+  const tryScroll = () => {
     const el = document.getElementById(hash)
-
     if (el) {
-      setTimeout(() => {
-        el.scrollIntoView({ behavior: 'smooth' })
-      }, 100)
+      el.scrollIntoView({ behavior: 'smooth' })
+      return true
     }
-  }, [])
+    return false
+  }
+
+  let attempts = 0
+
+  const interval = setInterval(() => {
+    const done = tryScroll()
+
+    attempts++
+    if (done || attempts > 20) {
+      clearInterval(interval)
+    }
+  }, 100)
+
+  return () => clearInterval(interval)
+}, [isLoading])
 }
