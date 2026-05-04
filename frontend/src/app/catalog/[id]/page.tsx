@@ -7,11 +7,13 @@ import { getProductById } from '@/shared/api'
 import type { Product } from '@/entities/product'
 import { ViewedProducts } from '@/features/viewedProducts/viewedProducts'
 import Image from 'next/image'
+import { useCartStore } from '@/features/cart/cart.store'
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const { addToCart } = useCartStore()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -84,7 +86,16 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       <div></div>
       <h3>Вы смотрели ранее</h3>
       <div>
-        <ViewedProducts product={product}/>
+        <ViewedProducts 
+  product={product} 
+  onAddToCart={(item) => addToCart({
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    price: item.price,
+    img: item.img,
+  })}
+/>
       </div>
     </section>
   )

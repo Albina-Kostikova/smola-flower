@@ -3,29 +3,25 @@
 import { useRouter } from 'next/navigation'
 import { Product } from './types'
 import { PinkButton } from '@/shared/ui/Buttons'
-import { useCartStore } from '@/features/cart/cart.store'
 import Image from 'next/image'
 
 type Props = {
   product: Product
   priority?: boolean
+  onAddToCart?: (product: Product) => void
 }
 
-export const ProductCard = ({ product, priority = false }: Props) => {
+export const ProductCard = ({ product, priority = false, onAddToCard }: Props) => {
   const router = useRouter()
-  const { addToCart } = useCartStore()
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    addToCart({
-      id: product.id,
-      title: product.title,
-      description: product.description || '',
-      price: product.price,
-      img: product.img,
-    })
-    console.log('Товар добавлен в корзину:', product.title)
+    if(onAddToCard) {
+      onAddToCard(product)
+    } else {
+      console.log('Товар добавлен в корзину:', product.title)
+    }
   }
 
   const handleViewProduct = (e: React.MouseEvent) => {

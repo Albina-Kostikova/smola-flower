@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { SearchBar } from '@/features/search/SearchBar'
+import { SearchBar } from '@/shared/ui/SearchBar'
 import Image from 'next/image'
 
 const underNavItems = [
@@ -82,7 +82,7 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
             )
           })}
         </div>
-        <button onClick={onCartClick} className="h-8 w-8 contain cursor-pointer">
+        <button title="Корзина" onClick={onCartClick} className="h-8 w-8 contain cursor-pointer">
           <Image
             src="/images/cart.svg"
             alt="Корзина"

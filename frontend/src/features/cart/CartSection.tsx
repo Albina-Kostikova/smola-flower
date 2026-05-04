@@ -109,7 +109,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
         className="w-full max-h-12/12 overflow-y-auto max-w-6xl rounded-4xl bg-white px-6 py-7">
         <div className="relative w-full flex items-center justify-center border-b border-gray-300 mb-8 pb-3">
           <h2>Корзина</h2>
-          <button onClick={onClose} className="absolute right-4 h-8 w-8 cursor-pointer hover:opacity-70">
+          <button title="Закрыть" onClick={onClose} className="absolute right-4 h-8 w-8 cursor-pointer hover:opacity-70">
             <Image src="/images/cart-close.svg" alt="Закрыть" width={32} height={32} />
           </button>
         </div>

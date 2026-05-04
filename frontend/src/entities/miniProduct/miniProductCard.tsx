@@ -2,24 +2,22 @@
 import { MiniProduct } from '@/entities/miniProduct'  
 import { useRouter } from 'next/navigation'
 import { PinkButton } from '@/shared/ui/Buttons'
-import { useCartStore } from '@/features/cart/cart.store'
 import Image from 'next/image'
-
-export function MiniProductCard({product}: {product: MiniProduct}) {
+type Props = {
+  product: MiniProduct
+  onAddToCart? : (product: MiniProduct) => void
+}
+export function MiniProductCard({product, onAddToCart}: Props) {
     const router = useRouter()
-    const { addToCart } = useCartStore()
   
     const handleAddToCart = (e: React.MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      addToCart({
-        id: product.id,
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        img: product.img,
-      })
-      console.log('Товар добавлен в корзину:', product.title)
+      if(onAddToCart) {
+        onAddToCart(product)
+      } else {
+        console.log('Товар добавлен в корзину:', product.title)
+      }
     }
   
     const handleViewProduct = (e: React.MouseEvent) => {

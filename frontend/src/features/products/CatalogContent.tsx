@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ProductCard, type Product } from '@/entities/product'
+import { useCartStore } from '@/features/cart/cart.store'
 import { useScrollToHash } from '@/shared/hooks/useScrollToHash'
 
 type Props = {
@@ -9,18 +10,30 @@ type Props = {
 }
 
 export const CatalogContent = ({ products }: Props) => {
+  const { addToCart } = useCartStore()
   const categoryMap = {
-    'Вазочки': 'vazochki',
-    'Серьги': 'sergi',
-    'Кулоны': 'kulony',
-    'Комплекты': 'komplekty',
-    'Броши': 'broshi',
-    'Сувениры': 'suveniry'
+    Вазочки: 'vazochki',
+    Серьги: 'sergi',
+    Кулоны: 'kulony',
+    Комплекты: 'komplekty',
+    Броши: 'broshi',
+    Сувениры: 'suveniry',
   }
-  
+
   const categories = ['Вазочки', 'Серьги', 'Кулоны', 'Комплекты', 'Броши', 'Сувениры']
 
   useScrollToHash(false)
+
+  const handleAddToCart = (product: Product) => {
+    addToCart({
+      id: product.id,
+      title: product.title,
+      description: product.description || '',
+      price: product.price,
+      img: product.img,
+    })
+    console.log('Товар добавлен в корзину:', product.title)
+  }
 
   return (
     <section className="flex flex-col w-full">
@@ -36,7 +49,7 @@ export const CatalogContent = ({ products }: Props) => {
                 const isPriority = categoryIndex === 0 && index < 6
                 return (
                   <Link className="flex justify-center" key={product.id} href={`/catalog/${product.id}`}>
-                    <ProductCard product={product} priority={isPriority} />
+                    <ProductCard product={product} priority={isPriority} onAddToCart={handleAddToCart} />
                   </Link>
                 )
               })}
