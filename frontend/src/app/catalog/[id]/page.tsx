@@ -29,7 +29,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     }
     fetchProduct()
   }, [params.id])
-  
+
   if (isLoading) {
     return (
       <section className="mx-auto w-full max-w-6xl px-4 py-8">
@@ -57,28 +57,53 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   ]
   return (
     <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-8">
-      <Breadcrumbs items={breadcrumbs}/>
+      <Breadcrumbs items={breadcrumbs} />
       <div className="flex">
         <div className="flex mr-8">
-          <Image src={product.img} alt={product.title} className="mr-4 object-cover rounded-4xl" width={350} height={350}/>
+          <Image
+            src={product.img}
+            alt={product.title}
+            className="mr-4 object-cover rounded-4xl"
+            width={350}
+            height={350}
+            priority
+          />
           <div className="flex flex-col gap-4">
-            <Image src={product.img2 || product.img} alt="Фото 2" width={174} height={168}/>
-            <Image src={product.img3 || product.img} alt="Фото 3"  width={174} height={168}/>
+            <Image src={product.img2 || product.img} alt="Фото 2" width={174} height={168} />
+            <Image src={product.img3 || product.img} alt="Фото 3" width={174} height={168} />
           </div>
         </div>
         <div className="flex flex-col border border-gray-300 rounded-2xl p-9 leading-9">
           <h1 className="text-3xl font-semibold">{product.title}</h1>
           <div className="flex items-center gap-12 py-7">
-            <h3 className="tall text-4xl">{product.price} <span className="text-2xl">₽</span></h3>
-            <SquareButton text={product.stock === true ? "В наличии" : "На заказ"} />
+            <h3 className="tall text-4xl">
+              {product.price} <span className="text-2xl">₽</span>
+            </h3>
+            <SquareButton text={product.stock === true ? 'В наличии' : 'На заказ'} />
           </div>
-          <p><b>Техника исполнения:</b> {product.technic}</p>
-          <p><b>Диаметр:</b> {product.diameter}</p>
-          <p><b>Цвет:</b> {product.color}</p>
-          <p><b>Форма:</b> {product.form}</p>
-          <p><b>Отделка:</b> {product.material}</p>
+          <p>
+            <b>Техника исполнения:</b> {product.technic}
+          </p>
+          <p>
+            <b>Диаметр:</b> {product.diameter}
+          </p>
+          <p>
+            <b>Цвет:</b> {product.color}
+          </p>
+          <p>
+            <b>Форма:</b> {product.form}
+          </p>
+          <p>
+            <b>Отделка:</b> {product.material}
+          </p>
           <div className="border-t border-gray-300 pt-6">
-            <PinkButton text="В корзину" />
+            <PinkButton onClick={() => addToCart({ 
+              id: product.id,
+              title: product.title,
+              description: product.description || '',
+              price: product.price      ,
+              img: product.img
+            })} text="В корзину" />
           </div>
         </div>
       </div>
@@ -86,16 +111,18 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       <div></div>
       <h3>Вы смотрели ранее</h3>
       <div>
-        <ViewedProducts 
-  product={product} 
-  onAddToCart={(item) => addToCart({
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    price: item.price,
-    img: item.img,
-  })}
-/>
+        <ViewedProducts
+          product={product}
+          onAddToCart={item =>
+            addToCart({
+              id: item.id,
+              title: item.title,
+              description: item.description,
+              price: item.price,
+              img: item.img,
+            })
+          }
+        />
       </div>
     </section>
   )

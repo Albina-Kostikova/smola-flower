@@ -1,12 +1,15 @@
 import { Update, Start, Command, Ctx, Action } from 'nestjs-telegraf'
 import { Context } from 'telegraf'
+import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { OrdersService } from '../../modules/orders/orders.service'
 import { ProductService } from '../../modules/products/products.service'
 
 @Update()
 export class TelegramUpdate {
   constructor(
+    @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService,
+    @Inject(forwardRef(() => ProductService))
     private productsService: ProductService,
   ) {}
 
@@ -26,7 +29,7 @@ export class TelegramUpdate {
     const orders = await this.ordersService.findAll()
 
     const text = orders
-      .map(o => `#${o.id} | ${o.name} | ${o.total}€ | ${o.status}`)
+      .map(o => `#${o.id} | ${o.name} | ${o.total}₽ | ${o.status}`)
       .join('\n')
 
     await ctx.reply(text || 'Нет заказов')
@@ -37,7 +40,7 @@ export class TelegramUpdate {
     const products = await this.productsService.findAll()
 
     const text = products
-      .map((p: any) => `${p.id} | ${p.title} | ${p.price}€`)
+      .map((p: any) => `${p.id} | ${p.title} | ${p.price}₽`)
       .join('\n')
 
     await ctx.reply(text || 'Нет товаров')

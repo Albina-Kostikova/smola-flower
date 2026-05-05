@@ -36,9 +36,9 @@ class OrderProductDto {
 }
 
 class CartItemDto {
-  @IsNumber()
-  @Min(1)
-  id!: number
+  @IsString()
+  @IsNotEmpty()
+  id!: string
 
   @IsString()
   @IsNotEmpty()
@@ -104,7 +104,6 @@ export class CreateOrderDto {
   @IsOptional()
   products?: OrderProductDto[]
 
-  // Поля для нового формата с фронтенда
   @ValidateNested()
   @Type(() => CustomerDto)
   @IsOptional()

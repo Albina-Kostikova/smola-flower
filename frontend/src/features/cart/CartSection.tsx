@@ -127,7 +127,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                       value={option.value}
                       checked={delivery === option.value}
                       onChange={e => setDelivery(e.target.value)}
-                      className="w-4 h-4 accent-(--color-primary)"
+                      className="cursor-pointer w-4 h-4 accent-(--color-primary)"
                     />
                     <span className="ml-3">{option.label}</span>
                   </label>
@@ -146,7 +146,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                       value={option.value}
                       checked={payment === option.value}
                       onChange={e => setPayment(e.target.value)}
-                      className="w-4 h-4 accent-(--color-primary)"
+                      className="cursor-pointer w-4 h-4 accent-(--color-primary)"
                     />
                     <span className="ml-3">{option.label}</span>
                   </label>

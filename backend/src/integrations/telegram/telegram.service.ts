@@ -74,7 +74,7 @@ export class TelegramService {
 🛍 Товары:
 ${productsText}
 
-💰 Сумма: ${order.total}€
+💰 Сумма: ${order.total} ₽
 `
   }
 }

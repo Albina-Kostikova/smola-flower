@@ -15,7 +15,7 @@ export class OrdersService {
   async create(dto: CreateOrderDto): Promise<Order> {
     const client = this.supabaseService.getClient()
 
-    // Поддержка обоих форматов данных
+
     const isNewFormat = !!dto.customer
     const name = isNewFormat ? dto.customer!.fio : dto.name
     const email = isNewFormat ? dto.customer!.email : dto.email
@@ -29,19 +29,16 @@ export class OrdersService {
       throw new BadRequestException('Missing required order data')
     }
 
-    // Для нового формата товары берутся напрямую, для старого - ищем в БД
     let total = 0
     let productsForTelegram: Array<{ name: string; quantity: number }> = []
 
     if (isNewFormat && dto.items) {
-      // Новый формат - товары уже содержат всю информацию
       total = dto.totalPrice || 0
       productsForTelegram = dto.items.map(item => ({
         name: item.title,
         quantity: item.quantity,
       }))
     } else if (dto.products) {
-      // Старый формат - ищем товары в БД
       const productIds = dto.products.map(p => p.productId)
       const { data: products, error: productsError } = await client.from('products').select('*').in('id', productIds)
 
@@ -70,19 +67,30 @@ export class OrdersService {
       address,
       delivery,
       payment,
-      products: items,
       total,
       status: 'new',
     }
 
-    // Insert order
     const { data: savedOrder, error: orderError } = await client.from('orders').insert([orderData]).select().single()
 
-    if (orderError) {
-      throw new Error(`Failed to create order: ${orderError.message}`)
-    }
+if (orderError) {
+  throw new Error(`Failed to create order: ${orderError.message}`)
+}
 
-    // Отправляем в Telegram
+if (items && items.length > 0) {
+  const orderItems = items.map((item: any) => ({
+    order_id: savedOrder.id,
+    product_id: item.id,
+    quantity: item.quantity || 1,
+  }))
+
+  const { error: itemsError } = await client.from('order_items').insert(orderItems)
+
+  if (itemsError) {
+    console.error('Failed to save order items:', itemsError)
+  }
+}
+
     await this.telegramService.sendOrderNotification({
       name,
       email,
