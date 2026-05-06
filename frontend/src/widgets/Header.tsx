@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { SearchBar } from '@/shared/ui/SearchBar'
+import { useCartStore } from '@/features/cart/cart.store'
 import Image from 'next/image'
 
 const underNavItems = [
@@ -21,8 +22,22 @@ const navItems = [
   { href: '/blog', label: 'Блог' },
   { href: '/lessons', label: 'Обучение' },
 ]
+
 export default function Header({ onCartClick }: { onCartClick: () => void }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSticky, setIsSticky] = useState(false)
+  const totalCount = useCartStore(state => state.totalCount)
+
+ useEffect(() => {
+  const handleScroll = () => {
+    setIsSticky(prev => {
+      const next = window.scrollY > 0
+      return prev === next ? prev : next
+    })
+  }
+  window.addEventListener('scroll', handleScroll)
+  return () => window.removeEventListener('scroll', handleScroll)
+}, [])
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
@@ -33,78 +48,93 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
   }, [isMobileMenuOpen])
 
   return (
-    <header className="z-40">
-      <div className="flex w-full items-center justify-between bg-(--color-primary) px-4 text-white md:hidden">
-        <button
-          type="button"
-          aria-label="Open menu"
-          aria-controls="header-mobile-sidebar"
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="p-2 text-2xl leading-none">
-          ☰
-        </button>
+    <>
+      <header className="z-40">
+        <div className="flex w-full items-center justify-between bg-(--color-accent) px-4 text-white md:hidden">
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-controls="header-mobile-sidebar"
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 text-2xl leading-none">
+            ☰
+          </button>
 
-        <Link href="/">
-          <Image
-            src="/images/logosf.svg"
-            className="object-contain"
-            alt="Smola Flowers"
-            width={100}
-            height={52}
-            loading="eager"
-            priority
-          />
-        </Link>
+          <Link href="/">
+            <Image
+              src="/images/logosf.svg"
+              className="object-contain"
+              alt="Smola Flowers"
+              width={100}
+              height={52}
+              loading="eager"
+              priority
+            />
+          </Link>
 
-        <Link href="/cart" className="p-2" aria-label="Корзина">
-          <Image src="/images/cart.svg" alt="Корзина" width={32} height={32} />
-        </Link>
-      </div>
-
-      <div className="hidden py-4 items-center justify-evenly gap-22 w-full bg-(--color-primary) lg:flex">
-        <Link href="/">
-          <Image
-            src="/images/logosf.svg"
-            className="contain"
-            alt="Smola Flowers"
-            width={100}
-            height={52}
-            loading="eager"
-            priority
-          />
-        </Link>
-        <div className="flex items-center gap-2 whitespace-nowrap text-white uppercase">
-          {navItems.map(item => {
-            return (
-              <Link key={item.href} href={item.href} className=" px-3 py-2 text-base font-medium transition ">
-                {item.label}
-              </Link>
-            )
-          })}
+          <Link href="/cart" className="p-2 relative" aria-label="Корзина">
+            <Image src="/images/cart.svg" alt="Корзина" width={32} height={32} />
+            {totalCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full shadow-md">
+                {totalCount > 99 ? '99+' : totalCount}
+              </span>
+            )}
+          </Link>
         </div>
-        <button title="Корзина" onClick={onCartClick} className="h-8 w-8 contain cursor-pointer">
-          <Image
-            src="/images/cart.svg"
-            alt="Корзина"
-            className="contain invert"
-            width={32}
-            height={32}
-            loading="eager"
-          />
-        </button>
 
-        <button
-          type="button"
-          aria-label="Open menu"
-          aria-controls="header-mobile-sidebar"
-          onClick={() => setIsMobileMenuOpen(true)}
-          className=" px-3 py-2 text-base font-medium  transition  md:hidden">
-          Меню
-        </button>
-      </div>
+        <div className="hidden py-4 items-center justify-evenly gap-22 w-full bg-(--color-primary) lg:flex relative z-40">
+          <Link href="/">
+            <Image
+              src="/images/logosf.svg"
+              className="contain"
+              alt="Smola Flowers"
+              width={100}
+              height={52}
+              loading="eager"
+              priority
+            />
+          </Link>
+          <div className="flex items-center gap-2 whitespace-nowrap text-white uppercase">
+            {navItems.map(item => {
+              return (
+                <Link key={item.href} href={item.href} className=" px-3 py-2 text-base font-medium transition ">
+                  {item.label}
+                </Link>
+              )
+            })}
+          </div>
+          <button title="Корзина" onClick={onCartClick} className="h-8 w-8 contain cursor-pointer relative">
+            <Image
+              src="/images/cart.svg"
+              alt="Корзина"
+              className="contain invert"
+              width={32}
+              height={32}
+              loading="eager"
+            />
+            {totalCount > 0 && (
+              <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full shadow-md">
+                {totalCount > 99 ? '99+' : totalCount}
+              </span>
+            )}
+          </button>
 
-      <nav className="bg-white sticky top-0 z-40 hidden w-full md:flex justify-center">
-        <div className="w-full max-w-7xl flex items-center justify-between px-4 py-3">
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-controls="header-mobile-sidebar"
+            onClick={() => setIsMobileMenuOpen(true)}
+            className=" px-3 py-2 text-base font-medium  transition  md:hidden">
+            Меню
+          </button>
+        </div>
+      </header>
+
+      <nav
+        className={`bg-white sticky top-0 z-50 hidden w-full md:flex justify-center transition-shadow ${
+          isSticky ? 'border-b border-(--color-secondary) shadow-sm' : ''
+        }`}>
+        <div className="w-full max-w-7xl flex items-center justify-between px-4 py-2">
           <div className="flex items-center">
             {underNavItems.map(item => (
               <Link
@@ -157,6 +187,6 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
           ))}
         </nav>
       </aside>
-    </header>
+    </>
   )
 }

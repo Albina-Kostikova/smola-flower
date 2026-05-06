@@ -82,7 +82,7 @@ const SearchBar = () => {
         <button
           type="submit"
           title="Поиск"
-          className="absolute right-3 top-1.9 w-5 h-5 cursor-pointer"
+          className="absolute right-3 top-1.5 w-5 h-5 cursor-pointer"
         >
           <Image src="/images/search.svg" alt="Найти" className="contain" width={20} height={20} loading="eager" />
         </button>

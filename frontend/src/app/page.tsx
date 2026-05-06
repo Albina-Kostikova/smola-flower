@@ -50,24 +50,24 @@ export default async function Home() {
 
         <div className="flex items-center justify-center h-161 w-full bg-(--color-secondary) py-8">
           <div className="flex flex-wrap max-w-xl">
-            <Link href="/gallery/vazochki" className="inline-block">
+            <Link href="/gallery" className="inline-block">
               <img src="/images/gallery-video-left.png" alt="Вазочки видео" className="w-135 h-75 mr-8" />
             </Link>
-            <Link href="/gallery/komplekty" className="inline-block">
+            <Link href="/gallery" className="inline-block">
               <img src="/images/komplekty.png" alt="Комплект" className="w-64 h-64 mr-8 mt-8" />
             </Link>
-            <Link href="/gallery/broshi" className="inline-block">
+            <Link href="/gallery" className="inline-block">
               <img src="/images/broshi.png" alt="Брошь" className="w-64 h-64 mt-8 mr-8" />
             </Link>
           </div>
           <div className="flex flex-wrap max-w-xl">
-            <Link href="/gallery/sergi" className="inline-block">
+            <Link href="/gallery" className="inline-block">
               <img src="/images/gallery-right1.png" alt="Серьги" className="w-64 h-64 mr-8" />
             </Link>
-            <Link href="/gallery/tarelki" className="inline-block">
+            <Link href="/gallery" className="inline-block">
               <img src="/images/gallery-right2.png" alt="Тарелки" className="w-64 h-64" />
             </Link>
-            <Link href="/gallery/kulon-video" className="inline-block">
+            <Link href="/gallery" className="inline-block">
               <img src="/images/gallery-video-right.png" alt="Кулон видео" className="w-135 h-75 mt-8" />
             </Link>
           </div>

@@ -1,34 +1,51 @@
-import { InfoButton } from "@/shared/ui/Buttons";
+'use client'
+
+import { useState, useEffect } from 'react'
+import type { Note } from '@/entities/note'
+import { getAllNotes } from '@/shared/api'
+import { ArticleCard } from '@/features/article'
+import { NotesList } from '@/features/notes'
+import { CommentsSection } from '@/features/comments'
 
 export default function BlogPage() {
+  const [notes, setNotes] = useState<Note[]>([])
+  const [currentNoteId, setCurrentNoteId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadNotes()
+  }, [])
+
+  const loadNotes = async () => {
+    try {
+      const data = await getAllNotes()
+      setNotes(data)
+      if (data.length > 0) {
+        setCurrentNoteId(data[0].id)
+      }
+    } catch (err) {
+      console.error('Failed to fetch notes:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const currentNote = notes.find(n => n.id === currentNoteId) || notes[0]
+
+  if (loading) {
+    return (
+      <section className="mx-auto w-full max-w-6xl px-4 py-8 flex items-center justify-center min-h-96">
+        <div className="text-(--color-primary) text-xl">Загрузка...</div>
+      </section>
+    )
+  }
+
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 py-8">
-      <div>
-        <img src={note.img} alt="Картинка" className="w-111 h-142 cover" />
-        <div className="flex flex-col items-center justify-between">
-          <h6 className="text-(--color-primary) text-sm">{note.date}</h6>
-          <h4 className="tall">{note.title}</h4>
-          <p>{note.text}</p>
-        </div>
-      </div>
-      <div>
-        <div>
-          {notes.map(note => (
-            <div>
-              <img alt="Картинка" className="w-40 h-72" />
-              <div>
-                <h6>{note.date}</h6>
-                <h4>{note.title}</h4>
-                <p>{note.text}</p>
-                <InfoButton text="Продолжить чтение" />
-              </div>
-            </div>
-          ))}
-        </div>
-        <div>
-          <div></div>
-          <div></div>
-        </div>
+    <section className="mx-auto w-full max-w-6xl px-4 py-8 space-y-8">
+      <ArticleCard note={currentNote} />
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
+        <NotesList notes={notes} currentNoteId={currentNoteId} onNoteSelect={setCurrentNoteId} />
+        <CommentsSection noteId={currentNoteId} />
       </div>
     </section>
   )

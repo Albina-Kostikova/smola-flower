@@ -8,17 +8,17 @@ import Image from 'next/image'
 type Props = {
   product: Product
   priority?: boolean
-  onAddToCart?: (product: Product) => void
+  onAddToCart: (product: Product) => void
 }
 
-export const ProductCard = ({ product, priority = false, onAddToCard }: Props) => {
+export const ProductCard = ({ product, priority = false, onAddToCart }: Props) => {
   const router = useRouter()
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if(onAddToCard) {
-      onAddToCard(product)
+    if(onAddToCart) {
+      onAddToCart(product)
     } else {
       console.log('Товар добавлен в корзину:', product.title)
     }
@@ -31,7 +31,7 @@ export const ProductCard = ({ product, priority = false, onAddToCard }: Props) =
   }
 
   return (
-    <div className="flex flex-col items-center justify-between border border-gray-300 rounded-4xl pb-5 w-70 h-107 text-white">
+    <div className="flex flex-col items-center justify-between border border-gray-300 rounded-4xl pb-5 w-70 h-107 text-white mb-5">
       <div className="relative w-70 h-70 group overflow-hidden rounded-4xl cursor-pointer" onClick={handleViewProduct}>
         <Image
           src={product.img}

@@ -4,6 +4,8 @@ import { DatabaseModule } from './database/database.module'
 import { ProductsModule } from './modules/products/products.module'
 import { LessonsModule } from './modules/lessons/lessons.module'
 import { OrdersModule } from './modules/orders/orders.module'
+import { NotesModule } from './modules/notes/notes.module'
+import { CommentsModule } from './modules/comments/comments.module'
 import { TelegramModule } from './integrations/telegram/telegram.module'
 
 @Module({
@@ -15,6 +17,8 @@ import { TelegramModule } from './integrations/telegram/telegram.module'
     ProductsModule,
     LessonsModule,
     OrdersModule,
+    NotesModule,
+    CommentsModule,
     TelegramModule,
   ],
 })

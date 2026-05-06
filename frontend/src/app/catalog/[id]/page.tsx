@@ -5,6 +5,7 @@ import { PinkButton, SquareButton } from '@/shared/ui/Buttons'
 import { useState, useEffect } from 'react'
 import { getProductById } from '@/shared/api'
 import type { Product } from '@/entities/product'
+import { SimilarProducts } from '@/features/similarProducts'
 import { ViewedProducts } from '@/features/viewedProducts/viewedProducts'
 import Image from 'next/image'
 import { useCartStore } from '@/features/cart/cart.store'
@@ -66,6 +67,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             className="mr-4 object-cover rounded-4xl"
             width={350}
             height={350}
+            style={{ width: 350, height: 365 }}
             priority
           />
           <div className="flex flex-col gap-4">
@@ -101,15 +103,19 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               id: product.id,
               title: product.title,
               description: product.description || '',
-              price: product.price      ,
+              price: product.price,
               img: product.img
             })} text="В корзину" />
           </div>
         </div>
       </div>
-      <h3>Похожие товары</h3>
-      <div></div>
-      <h3>Вы смотрели ранее</h3>
+
+      <h3 className="text-2xl font-semibold text-(--color-primary) mt-12 mb-2">Похожие товары</h3>
+      <div>
+        <SimilarProducts currentProduct={product} />
+      </div>
+
+      <h3 className="text-2xl font-semibold text-(--color-primary) mt-12 mb-2">Вы смотрели ранее</h3>
       <div>
         <ViewedProducts
           product={product}

@@ -55,6 +55,48 @@ export class TelegramService {
     }
   }
 
+  async sendCommentNotification(comment: {
+    name: string
+    text: string
+    noteTitle: string
+    noteId: string
+  }): Promise<void> {
+    const message = `💬 НОВЫЙ КОММЕНТАРИЙ
+
+📝 Статья: ${comment.noteTitle}
+👤 ${comment.name}
+💬 ${comment.text}
+
+👉 /view_note_${comment.noteId}`
+
+    try {
+      await axios.post(`https://api.telegram.org/bot${this.token}/sendMessage`, {
+        chat_id: this.chatId,
+        text: message,
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '👁 Посмотреть комментарии', callback_data: `view_comments_${comment.noteId}` }],
+          ],
+        },
+      })
+    } catch (err: any) {
+      console.error('Telegram comment notification error:', err?.response?.data || err.message)
+    }
+  }
+
+  async sendMessage(text: string, replyMarkup?: any): Promise<void> {
+    try {
+      await axios.post(`https://api.telegram.org/bot${this.token}/sendMessage`, {
+        chat_id: this.chatId,
+        text,
+        parse_mode: 'Markdown',
+        reply_markup: replyMarkup,
+      })
+    } catch (err: any) {
+      console.error('Telegram send error:', err?.response?.data || err.message)
+    }
+  }
+
   private formatOrderMessage(order: OrderNotification): string {
     const productsText = order.products
       .map(p => `- ${p.name} × ${p.quantity}`)

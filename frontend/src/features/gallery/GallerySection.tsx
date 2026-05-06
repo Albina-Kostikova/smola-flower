@@ -54,9 +54,10 @@ export function GallerySection({ images }: Props) {
       </div>
 
       {active && (
-        <div className="w-100 min-h-screen border-l border-gray-200 bg-white p-6 overflow-y-auto sticky top-0 self-start">
+        <div className="w-100 rounded-2xl border border-(--color-secondary) ml-5 bg-white p-6 overflow-y-auto sticky top-0 self-start">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Просмотр</h2>
+            <div></div>
+            <h2 className="text-xl font-semibold">{active.title}</h2>
             <button
               onClick={handleClose}
               className="text-2xl cursor-pointer hover:opacity-70"
@@ -73,7 +74,6 @@ export function GallerySection({ images }: Props) {
             className="w-full rounded-2xl object-cover mb-4"
           />
 
-          <h3 className="text-lg font-semibold mb-2">{active.title}</h3>
           <PinkButton onClick={handleGoToProduct} text="Перейти к товару" />
         </div>
       )}

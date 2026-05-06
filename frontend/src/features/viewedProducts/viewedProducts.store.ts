@@ -37,7 +37,7 @@ export const useViewedProductsStore = create<ViewedProductsStore>()(
           category: product.category,
           timestamp: Date.now(),
           price: product.price,
-          description: product.description
+          description: product.description || ''
         }
 
         set({

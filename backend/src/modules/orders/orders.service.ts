@@ -84,7 +84,7 @@ if (items && items.length > 0) {
     quantity: item.quantity || 1,
   }))
 
-  const { error: itemsError } = await client.from('order_items').insert(orderItems)
+  const { error: itemsError } = await client.from('order-items').insert(orderItems)
 
   if (itemsError) {
     console.error('Failed to save order items:', itemsError)
