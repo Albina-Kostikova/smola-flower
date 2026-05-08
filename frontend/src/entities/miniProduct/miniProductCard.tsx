@@ -1,51 +1,54 @@
 'use client'
-import { MiniProduct } from '@/entities/miniProduct'  
+import { MiniProduct } from '@/entities/miniProduct'
 import { useRouter } from 'next/navigation'
 import { PinkButton } from '@/shared/ui/Buttons'
 import Image from 'next/image'
 import { useCartStore } from '@/features/cart'
 type Props = {
   product: MiniProduct
-  onAddToCart? : (product: MiniProduct) => void
+  onAddToCart?: (product: MiniProduct) => void
 }
-export function MiniProductCard({product, onAddToCart}: Props) {
-    const router = useRouter()
-    const { addToCart } = useCartStore()
-  
-    const handleViewProduct = (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      router.push(`/catalog/${product.id}`)
-    }
-  
-    return (
-      <div className="flex flex-col items-center justify-between border border-gray-300 rounded-4xl pb-4 w-48 h-80 text-white">
-        <div className="relative w-38 h-38 group overflow-hidden rounded-4xl cursor-pointer" onClick={handleViewProduct}>
-          <Image
-            src={product.img}
-            alt={product.title}
-            className="object-cover"
-            width={152} height={152}
-          />
-  
-          <div className="absolute inset-0 bg-pink-500/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-            <button onClick={handleViewProduct} className="cursor-pointer" title="Просмотр">
-              <PinkButton text="Просмотр" />
-            </button>
-          </div>
-        </div>
-  
-        <h3 className="text-sm px-2 text-center text-black">{product.title}</h3>
-        <h4 className="tall scale-x-90 text-xl text-black">
-          {product.price} <span className="text-sm">₽</span>
-        </h4>
-        <PinkButton className="cursor-pointer text-sm" onClick={() => addToCart({ 
-              id: product.id,
-              title: product.title,
-              description: product.description || '',
-              price: product.price      ,
-              img: product.img
-            })} text="В корзину" />
-      </div>
-    )
+export function MiniProductCard({ product, onAddToCart }: Props) {
+  const router = useRouter()
+  const { addToCart } = useCartStore()
+
+  const handleViewProduct = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    router.push(`/catalog/${product.id}`)
   }
+
+  return (
+    <div className="flex flex-col items-center justify-between border border-gray-300 rounded-4xl pb-4 w-38 h-80 text-white">
+      <div
+        className="relative w-38 aspect-square group overflow-hidden rounded-4xl cursor-pointer"
+        onClick={handleViewProduct}>
+        <Image src={product.img} alt={product.title} fill sizes="152px" className="object-cover" loading="lazy" />
+
+        <div className="absolute inset-0 bg-pink-500/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+          <button onClick={handleViewProduct} className="cursor-pointer" title="Просмотр">
+            <PinkButton text="Просмотр" />
+          </button>
+        </div>
+      </div>
+
+      <h3 className="text-sm px-2 text-center text-black">{product.title}</h3>
+      <h4 className="tall scale-x-90 text-xl text-black">
+        {product.price} <span className="text-sm">₽</span>
+      </h4>
+      <PinkButton
+        className="cursor-pointer text-sm"
+        onClick={() =>
+          addToCart({
+            id: product.id,
+            title: product.title,
+            description: product.description || '',
+            price: product.price,
+            img: product.img,
+          })
+        }
+        text="В корзину"
+      />
+    </div>
+  )
+}

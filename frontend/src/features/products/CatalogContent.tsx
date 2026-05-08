@@ -13,7 +13,7 @@ type Props = {
 
 export const CatalogContent = ({ products }: Props) => {
   const { addToCart } = useCartStore()
-  const [sortBy, setSortBy] = useState<SortOption>('default')
+  const [sortBy, setSortBy] = useState<SortOption>('category')
 
   const categoryMap = {
     Вазочки: 'vazochki',
@@ -45,12 +45,12 @@ export const CatalogContent = ({ products }: Props) => {
     return (
       <section className="flex flex-col w-full">
         <div className="flex justify-end mb-6">
-          <select title="Категории"
+          <select
+            title="Категории"
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-pink-400"
-          >
-            {sortOptions.map((option) => (
+            onChange={e => setSortBy(e.target.value as SortOption)}
+            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-pink-400">
+            {sortOptions.map(option => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -69,7 +69,7 @@ export const CatalogContent = ({ products }: Props) => {
                 {items.map((product: Product, index) => {
                   const isPriority = categoryIndex === 0 && index < 6
                   return (
-                    <Link className="flex justify-center" key={product.id} href={`/catalog/${product.id}`}>
+                    <Link className="block w-full" key={product.id} href={`/catalog/${product.id}`}>
                       <ProductCard product={product} priority={isPriority} onAddToCart={handleAddToCart} />
                     </Link>
                   )
@@ -85,12 +85,12 @@ export const CatalogContent = ({ products }: Props) => {
   return (
     <section className="flex flex-col w-full">
       <div className="flex justify-end mb-6">
-        <select title="Сортировка"
+        <select
+          title="Сортировка"
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortOption)}
-          className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-pink-400"
-        >
-          {sortOptions.map((option) => (
+          onChange={e => setSortBy(e.target.value as SortOption)}
+          className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-pink-400">
+          {sortOptions.map(option => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -105,7 +105,7 @@ export const CatalogContent = ({ products }: Props) => {
           {sortedProducts.map((product: Product, index) => {
             const isPriority = index < 6
             return (
-              <Link className="flex justify-center" key={product.id} href={`/catalog/${product.id}`}>
+              <Link className="block w-full" key={product.id} href={`/catalog/${product.id}`}>
                 <ProductCard product={product} priority={isPriority} onAddToCart={handleAddToCart} />
               </Link>
             )

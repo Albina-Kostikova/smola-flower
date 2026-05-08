@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common'
+import { Controller, Get, Post, Query } from '@nestjs/common'
 import { Body, Param } from '@nestjs/common'
 import { ProductService } from './products.service'
 import { Product } from './products.entity'
@@ -7,7 +7,13 @@ export class ProductsController {
   constructor(private productService: ProductService) {}
 
   @Get()
-  async getAllProducts(): Promise<Product[]> {
+  async getAllProducts(
+    @Query('category') category?: string,
+    @Query('excludeId') excludeId?: string,
+  ): Promise<Product[]> {
+    if (category) {
+      return this.productService.getProductsByCategory(category, excludeId)
+    }
     return this.productService.getAllProducts()
   }
   @Get(':uuid')

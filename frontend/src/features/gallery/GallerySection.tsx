@@ -29,24 +29,21 @@ export function GallerySection({ images }: Props) {
 
   return (
     <div className="relative flex">
-      <div
-        className={`transition-all duration-300 ${
-          active ? 'w-[calc(100%-420px)]' : 'w-full'
-        }`}
-      >
+      <div className={`transition-all duration-300 ${active ? 'w-[calc(100%-420px)]' : 'w-full'}`}>
         <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
           {images.map((image, index) => (
             <div
               key={`${image.productId}-${index}`}
               className="break-inside-avoid mb-4 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => handleImageClick(image)}
-            >
+              onClick={() => handleImageClick(image)}>
               <Image
                 src={image.url}
                 alt={image.title}
                 width={300}
                 height={400}
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 className="w-full rounded-2xl object-cover"
+                loading={index < 4 ? undefined : 'lazy'}
               />
             </div>
           ))}
@@ -58,10 +55,7 @@ export function GallerySection({ images }: Props) {
           <div className="flex justify-between items-center mb-4">
             <div></div>
             <h2 className="text-xl font-semibold">{active.title}</h2>
-            <button
-              onClick={handleClose}
-              className="text-2xl cursor-pointer hover:opacity-70"
-            >
+            <button onClick={handleClose} className="text-2xl cursor-pointer hover:opacity-70">
               ✕
             </button>
           </div>
@@ -72,6 +66,7 @@ export function GallerySection({ images }: Props) {
             width={400}
             height={500}
             className="w-full rounded-2xl object-cover mb-4"
+            priority
           />
 
           <PinkButton onClick={handleGoToProduct} text="Перейти к товару" />

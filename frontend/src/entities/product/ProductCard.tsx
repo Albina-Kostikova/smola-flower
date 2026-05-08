@@ -17,7 +17,7 @@ export const ProductCard = ({ product, priority = false, onAddToCart }: Props) =
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if(onAddToCart) {
+    if (onAddToCart) {
       onAddToCart(product)
     } else {
       console.log('Товар добавлен в корзину:', product.title)
@@ -33,14 +33,7 @@ export const ProductCard = ({ product, priority = false, onAddToCart }: Props) =
   return (
     <div className="flex flex-col items-center justify-between border border-gray-300 rounded-4xl pb-5 w-70 h-107 text-white mb-5">
       <div className="relative w-70 h-70 group overflow-hidden rounded-4xl cursor-pointer" onClick={handleViewProduct}>
-        <Image
-          src={product.img}
-          alt={product.title}
-          width={280}
-          height={280}
-          className="object-cover"
-          priority={priority}
-        />
+        <Image src={product.img} alt={product.title} fill sizes="280px" className="object-cover" priority={priority} />
 
         <div className="absolute inset-0 bg-pink-500/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
           <button onClick={handleViewProduct} className="cursor-pointer" title="Просмотр">

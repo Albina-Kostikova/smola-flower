@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
 import type { Product } from '@/entities/product'
 import { MiniProductCard } from '@/entities/miniProduct'
 import { useCartStore } from '../cart'
@@ -17,18 +15,17 @@ export function SimilarProducts({ currentProduct }: SimilarProductsProps) {
   const [similar, setSimilar] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const { addToCart } = useCartStore()
+
   useEffect(() => {
     const fetchSimilar = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/products`)
+        const res = await fetch(
+          `${API_URL}/api/products?category=${encodeURIComponent(currentProduct.category)}&excludeId=${currentProduct.id}`,
+          { next: { revalidate: 3600 } },
+        )
         if (!res.ok) throw new Error('Failed to fetch')
-        const all: Product[] = await res.json()
-
-        const filtered = all
-          .filter(p => p.category === currentProduct.category && p.id !== currentProduct.id)
-          .slice(0, 10)
-
-        setSimilar(filtered)
+        const filtered: Product[] = await res.json()
+        setSimilar(filtered.slice(0, 12))
       } catch (err) {
         console.error('Error fetching similar products:', err)
       } finally {
@@ -41,9 +38,9 @@ export function SimilarProducts({ currentProduct }: SimilarProductsProps) {
 
   if (loading) {
     return (
-      <div className="flex gap-4 mt-4 overflow-x-auto pb-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="min-w-45 bg-gray-100 rounded-2xl h-48 animate-pulse shrink-0" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-10">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="bg-gray-100 rounded-2xl h-48 animate-pulse" />
         ))}
       </div>
     )
@@ -56,20 +53,26 @@ export function SimilarProducts({ currentProduct }: SimilarProductsProps) {
       </div>
     )
   }
+
   const handleAddToCart = (p: { id: string; title: string; description: string; price: number; img: string }) => {
     addToCart(p)
     console.log('Товар добавлен в корзину:', p.title)
   }
+
   return (
-    <section className="flex gap-10 mt-10">
+    <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-10">
       {similar.map(product => (
-        <MiniProductCard onAddToCart={handleAddToCart} product={{
-    id: product.id,
-    title: product.title,
-    price: product.price,
-    img: product.img,
-    description: product.description || '',
-  }}/>
+        <MiniProductCard
+          key={product.id}
+          onAddToCart={handleAddToCart}
+          product={{
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            img: product.img,
+            description: product.description || '',
+          }}
+        />
       ))}
     </section>
   )

@@ -234,6 +234,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                           className="rounded-2xl object-cover"
                           width={80}
                           height={80}
+                          style={{ width: 80, height: 80 }}
                         />
                         <div className="ml-4 flex-1">
                           <h4 className="font-semibold">{item.title}</h4>

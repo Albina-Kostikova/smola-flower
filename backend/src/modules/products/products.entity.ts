@@ -5,6 +5,7 @@ export interface Product {
   img3?: string
   title: string
   price: number
+  category: string
   technic: string
   diameter: string
   color: string

@@ -41,6 +41,22 @@ export class ProductService {
     return data as Product
   }
 
+  async getProductsByCategory(category: string, excludeId?: string, limit: number = 12): Promise<Product[]> {
+    let query = this.supabaseService.getClient().from('products').select('*').eq('category', category)
+
+    if (excludeId) {
+      query = query.neq('id', excludeId)
+    }
+
+    const { data, error } = await query.limit(limit)
+
+    if (error) {
+      throw new Error(`Failed to fetch products by category: ${error.message}`)
+    }
+
+    return (data || []) as Product[]
+  }
+
   async create(productData: Partial<Product>): Promise<Product> {
     return this.createProduct(productData as Product)
   }

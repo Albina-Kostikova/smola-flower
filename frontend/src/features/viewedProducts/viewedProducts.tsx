@@ -10,8 +10,8 @@ type Props = {
 }
 
 export const ViewedProducts = ({ product, onAddToCart }: Props) => {
-  const viewed = useViewedProductsStore((s) => s.viewed)
-  const addViewed = useViewedProductsStore((s) => s.addViewed)
+  const viewed = useViewedProductsStore(s => s.viewed)
+  const addViewed = useViewedProductsStore(s => s.addViewed)
 
   useEffect(() => {
     if (product) {
@@ -27,10 +27,10 @@ export const ViewedProducts = ({ product, onAddToCart }: Props) => {
   }
 
   return (
-    <section className="flex gap-10 mt-10">
-        {viewed.map((p) => (
-          <MiniProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />
-        ))}
+    <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-10">
+      {viewed.slice(0, 12).map(p => (
+        <MiniProductCard key={p.id} product={p} onAddToCart={handleAddToCart} />
+      ))}
     </section>
   )
 }

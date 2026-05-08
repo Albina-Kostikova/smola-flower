@@ -14,6 +14,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const { addToCart } = useCartStore()
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       <section className="mx-auto w-full max-w-6xl px-4 py-8">
         <Breadcrumbs />
         <div className="flex flex-col justify-center items-center h-64">
-          <Image src="/images/spiner.svg" alt="Loading..." width={200} height={200}/>
+          <Image src="/images/spiner.svg" alt="Loading..." width={200} height={200} />
           <p>Загрузка...</p>
         </div>
       </section>
@@ -57,22 +58,48 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     { label: product.title, href: `/catalog/${product.id}` },
   ]
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-8">
+    <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-8 overflow-x-hidden">
       <Breadcrumbs items={breadcrumbs} />
       <div className="flex">
         <div className="flex mr-8">
-          <Image
-            src={product.img}
-            alt={product.title}
-            className="mr-4 object-cover rounded-4xl"
-            width={350}
-            height={350}
-            style={{ width: 350, height: 365 }}
-            priority
-          />
+          <button onClick={() => setSelectedImage(product.img)} className="flex mr-4 cursor-pointer" title="Увеличить">
+            <Image
+              src={product.img}
+              alt={product.title}
+              className="object-cover rounded-4xl"
+              width={350}
+              height={350}
+              style={{ width: 355, height: 355 }}
+              priority
+            />
+          </button>
           <div className="flex flex-col gap-4">
-            <Image src={product.img2 || product.img} alt="Фото 2" width={174} height={168} />
-            <Image src={product.img3 || product.img} alt="Фото 3" width={174} height={168} />
+            <button
+              onClick={() => setSelectedImage(product.img2 || product.img)}
+              className="cursor-pointer"
+              title="Увеличить">
+              <Image
+                src={product.img2 || product.img}
+                className="rounded-2xl"
+                alt="Фото 2"
+                width={175}
+                height={170}
+                style={{ width: 170, height: 170 }}
+              />
+            </button>
+            <button
+              onClick={() => setSelectedImage(product.img3 || product.img)}
+              className="cursor-pointer"
+              title="Увеличить">
+              <Image
+                src={product.img3 || product.img}
+                className="rounded-2xl"
+                alt="Фото 3"
+                width={175}
+                height={170}
+                style={{ width: 170, height: 170 }}
+              />
+            </button>
           </div>
         </div>
         <div className="flex flex-col border border-gray-300 rounded-2xl p-9 leading-9">
@@ -99,13 +126,18 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <b>Отделка:</b> {product.material}
           </p>
           <div className="border-t border-gray-300 pt-6">
-            <PinkButton onClick={() => addToCart({ 
-              id: product.id,
-              title: product.title,
-              description: product.description || '',
-              price: product.price,
-              img: product.img
-            })} text="В корзину" />
+            <PinkButton
+              onClick={() =>
+                addToCart({
+                  id: product.id,
+                  title: product.title,
+                  description: product.description || '',
+                  price: product.price,
+                  img: product.img,
+                })
+              }
+              text="В корзину"
+            />
           </div>
         </div>
       </div>
@@ -130,6 +162,28 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           }
         />
       </div>
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center"
+          onClick={() => setSelectedImage(null)}>
+          <div className="relative rounded-2xl">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-2 right-2 text-white bg-black/50 rounded-full w-10 h-10 flex items-center justify-center text-2xl cursor-pointer hover:bg-black/70 z-10"
+              title="Закрыть">
+              ✕
+            </button>
+            <Image
+              src={selectedImage}
+              alt="Просмотр фото"
+              width={800}
+              height={800}
+              className="max-w-[80vw] max-h-[80vh] object-contain rounded-2xl"
+              priority
+            />
+          </div>
+        </div>
+      )}
     </section>
   )
 }
