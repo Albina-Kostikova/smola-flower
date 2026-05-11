@@ -2,7 +2,7 @@
 
 import { InfoButton } from '@/shared/ui/Buttons'
 import type { Note } from '@/entities/note'
-
+import Image from 'next/image'
 interface NotesListProps {
   notes: Note[]
   currentNoteId: string | null
@@ -27,25 +27,28 @@ export function NotesList({ notes, currentNoteId, onNoteSelect }: NotesListProps
   }
 
   return (
-    <aside className="bg-white rounded-2xl shadow-lg p-6 h-fit">
-      <h2 className="cursive text-2xl mb-6 text-(--color-primary)">Другие статьи</h2>
-      <div className="space-y-4">
+    <aside className="bg-white rounded-2xl shadow-lg h-fit">
+      <h2 className="cursive text-2xl mb-5 text-(--color-primary)">Другие статьи</h2>
+      <div className="space-y-6">
         {otherNotes.map(note => (
           <div
             key={note.id}
             onClick={() => onNoteSelect(note.id)}
-            className="flex gap-4 p-3 rounded-xl hover:bg-(--color-accent) transition-colors cursor-pointer"
+            className="flex gap-4 w-111 rounded-xl hover:bg-(--color-accent) transition-colors cursor-pointer"
           >
-            <img
+            <Image
+              width={160}
+              height={285}
               src={note.img}
               alt={note.title}
-              className="w-20 h-16 rounded-lg object-cover shrink-0"
+              className="rounded-lg object-cover shrink-0"
+              loading="lazy"
             />
-            <div className="min-w-0">
+            <div className="min-w-0 flex flex-col justify-between">
               <h6 className="text-(--color-primary) text-xs mb-1">{formatDate(note.created_at)}</h6>
-              <h4 className="tall text-sm mb-1 leading-tight">{note.title}</h4>
-              <p className="text-gray-500 text-xs line-clamp-2">{note.text}</p>
-              <InfoButton text="Продолжить чтение" />
+              <h4 className="tall text-sm    mb-1 leading-tight">{note.title}</h4>
+              <p className="text-gray-500 text-xs line-clamp-5">{note.text}</p>
+              <InfoButton className="text-sm mt-3" text="Продолжить чтение" />
             </div>
           </div>
         ))}

@@ -6,6 +6,7 @@ import { getAllNotes } from '@/shared/api'
 import { ArticleCard } from '@/features/article'
 import { NotesList } from '@/features/notes'
 import { CommentsSection } from '@/features/comments'
+import { Breadcrumbs } from '@/shared/ui/Breadcrumbs'
 
 export default function BlogPage() {
   const [notes, setNotes] = useState<Note[]>([])
@@ -42,6 +43,7 @@ export default function BlogPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-8 space-y-8">
+      <Breadcrumbs />
       <ArticleCard note={currentNote} />
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
         <NotesList notes={notes} currentNoteId={currentNoteId} onNoteSelect={setCurrentNoteId} />
