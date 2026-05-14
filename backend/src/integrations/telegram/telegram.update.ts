@@ -4,6 +4,7 @@ import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { OrdersService } from '../../modules/orders/orders.service'
 import { ProductService } from '../../modules/products/products.service'
 import { NotesService } from '../../modules/notes/notes.service'
+import { LessonsService } from '../../modules/lessons/lessons.service'
 
 interface NoteCreationState {
   step: 'title' | 'text' | 'img' | 'date'
@@ -13,9 +14,34 @@ interface NoteCreationState {
   date?: string
 }
 
+interface ProductCreationState {
+  step: string
+  title?: string
+  img?: string
+  price?: string
+  category?: string
+  technic?: string
+  diameter?: string
+  color?: string
+  form?: string
+  material?: string
+  stock?: string
+}
+
+interface LessonCreationState {
+  step: string
+  title?: string
+  url?: string
+  description?: string
+  img?: string
+  price?: string
+}
+
 @Update()
 export class TelegramUpdate {
   private noteCreationStates: Map<number, NoteCreationState> = new Map()
+  private productCreationStates: Map<number, ProductCreationState> = new Map()
+  private lessonCreationStates: Map<number, LessonCreationState> = new Map()
 
   constructor(
     @Inject(forwardRef(() => OrdersService))
@@ -24,6 +50,8 @@ export class TelegramUpdate {
     private productsService: ProductService,
     @Inject(forwardRef(() => NotesService))
     private notesService: NotesService,
+    @Inject(forwardRef(() => LessonsService))
+    private lessonsService: LessonsService,
   ) {}
 
   @Start()
@@ -31,25 +59,13 @@ export class TelegramUpdate {
     await ctx.reply(
       `🌸 SMOLA Flowers — Админ-панель
 
-Команды для статей:
-/notes — список всех статей
-/addnote — создать статью (пошагово)
-
-Команды для комментариев:
-/comments — последние комментарии
-
-Быстрое создание статьи:
-/addnote Название | Текст | https://картинка.jpg | 2024-03-15
-
-Другие команды:
-/orders — все заказы
-/products — все товары`,
+Выберите раздел для управления:`,
       {
         reply_markup: {
           inline_keyboard: [
-            [{ text: '📝 Создать статью', callback_data: 'add_note' }],
-            [{ text: '📋 Список статей', callback_data: 'list_notes' }],
-            [{ text: '💬 Комментарии', callback_data: 'list_comments' }],
+            [{ text: '🛍 Товары', callback_data: 'menu_products' }],
+            [{ text: '📚 Уроки', callback_data: 'menu_lessons' }],
+            [{ text: '📝 Статьи', callback_data: 'menu_notes' }],
             [{ text: '📦 Заказы', callback_data: 'list_orders' }],
           ],
         },
@@ -57,9 +73,420 @@ export class TelegramUpdate {
     )
   }
 
+  // ===== МЕНЮ РАЗДЕЛОВ =====
+
+  @Action('menu_products')
+  async menuProducts(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    await ctx.reply('🛍 Управление товарами:', {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📋 Список товаров', callback_data: 'list_products' }],
+          [{ text: '➕ Создать товар', callback_data: 'add_product' }],
+          [{ text: '◀️ Назад', callback_data: 'back_to_start' }],
+        ],
+      },
+    })
+  }
+
+  @Action('menu_lessons')
+  async menuLessons(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    await ctx.reply('📚 Управление уроками:', {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📋 Список уроков', callback_data: 'list_lessons' }],
+          [{ text: '➕ Создать урок', callback_data: 'add_lesson' }],
+          [{ text: '◀️ Назад', callback_data: 'back_to_start' }],
+        ],
+      },
+    })
+  }
+
+  @Action('menu_notes')
+  async menuNotes(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    await ctx.reply('📝 Управление статьями:', {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📋 Список статей', callback_data: 'list_notes' }],
+          [{ text: '➕ Создать статью', callback_data: 'add_note' }],
+          [{ text: '◀️ Назад', callback_data: 'back_to_start' }],
+        ],
+      },
+    })
+  }
+
+  @Action('back_to_start')
+  async backToStart(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    await this.start(ctx)
+  }
+
+  // ===== ТОВАРЫ =====
+
+  @Action('list_products')
+  async listProducts(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    try {
+      const products = await this.productsService.findAll()
+
+      if (products.length === 0) {
+        await ctx.reply('📭 Нет товаров')
+        return
+      }
+
+      // Показываем первые 10 товаров
+      for (const product of products.slice(0, 10)) {
+        const title = (product as any).title || (product as any).name || 'Без названия'
+        const price = (product as any).price || 'не указана'
+        await ctx.reply(`🛍 *${title}*\n💰 ${price} сом`, {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: '👁 Посмотреть', callback_data: `view_product_${(product as any).id}` },
+                { text: '🗑 Удалить', callback_data: `delete_product_${(product as any).id}` },
+              ],
+            ],
+          },
+        })
+      }
+    } catch (err) {
+      await ctx.reply('❌ Ошибка загрузки товаров')
+    }
+  }
+
+  @Action('add_product')
+  async addProduct(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    const chatId = (ctx as any).chat?.id
+    if (chatId) {
+      this.productCreationStates.set(chatId, { step: 'title' })
+      await ctx.reply('📝 Шаг 1 из 5\n\nВведите *название товара*:', { parse_mode: 'Markdown' })
+    }
+  }
+
+  @Action(/view_product_(.+)/)
+  async viewProduct(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    const id = (ctx as any).match?.[1]
+    if (!id) return
+
+    try {
+      const product = await this.productsService.findOne(id)
+      const title = (product as any).title || 'Без названия'
+      const price = (product as any).price || 'не указана'
+      const category = (product as any).category || ''
+      const material = (product as any).material || ''
+      const img = (product as any).img || ''
+
+      const info = `🛍 *${title}*\n💰 ${price} сом\n📂 ${category}\n🧵 ${material}`
+
+      if (img) {
+        await ctx.replyWithPhoto(img, {
+          caption: info,
+          parse_mode: 'Markdown',
+        })
+      } else {
+        await ctx.reply(info, { parse_mode: 'Markdown' })
+      }
+    } catch {
+      await ctx.reply('❌ Товар не найден')
+    }
+  }
+
+  @Action(/delete_product_(.+)/)
+  async deleteProduct(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    const id = (ctx as any).match?.[1]
+    if (!id) return
+
+    try {
+      await this.productsService.delete(id)
+      await ctx.reply('🗑 Товар удалён')
+    } catch {
+      await ctx.reply('❌ Ошибка удаления')
+    }
+  }
+
+  // ===== УРОКИ =====
+
+  @Action('list_lessons')
+  async listLessons(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    try {
+      const lessons = await this.lessonsService.getAllLessons()
+
+      if (lessons.length === 0) {
+        await ctx.reply('📭 Нет уроков')
+        return
+      }
+
+      for (const lesson of lessons.slice(0, 10)) {
+        const title = (lesson as any).title || 'Без названия'
+        const desc = (lesson as any).description || ''
+
+        await ctx.reply(`📚 *${title}*\n${desc.slice(0, 100)}`, {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: '👁 Посмотреть', callback_data: `view_lesson_${(lesson as any).id}` },
+                { text: '🗑 Удалить', callback_data: `delete_lesson_${(lesson as any).id}` },
+              ],
+            ],
+          },
+        })
+      }
+    } catch {
+      await ctx.reply('❌ Ошибка загрузки уроков')
+    }
+  }
+
+  @Action('add_lesson')
+  async addLesson(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    const chatId = (ctx as any).chat?.id
+    if (chatId) {
+      this.lessonCreationStates.set(chatId, { step: 'title' })
+      await ctx.reply('📝 Шаг 1 из 4\n\nВведите *название урока*:', { parse_mode: 'Markdown' })
+    }
+  }
+
+  @Action(/view_lesson_(.+)/)
+  async viewLesson(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    const id = (ctx as any).match?.[1]
+    if (!id) return
+
+    try {
+      const lesson = await this.lessonsService.getLessonById(id)
+      const title = (lesson as any).title || 'Без названия'
+      const desc = (lesson as any).description || ''
+      const img = (lesson as any).img || ''
+
+      if (img) {
+        await ctx.replyWithPhoto(img, {
+          caption: `📚 *${title}*\n\n📖 ${desc}`,
+          parse_mode: 'Markdown',
+        })
+      } else {
+        await ctx.reply(`📚 *${title}*\n\n📖 ${desc}`, { parse_mode: 'Markdown' })
+      }
+    } catch {
+      await ctx.reply('❌ Урок не найден')
+    }
+  }
+
+  @Action(/delete_lesson_(.+)/)
+  async deleteLesson(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    const id = (ctx as any).match?.[1]
+    if (!id) return
+
+    try {
+      await this.lessonsService.delete(id)
+      await ctx.reply('🗑 Урок удалён')
+    } catch {
+      await ctx.reply('❌ Ошибка удаления')
+    }
+  }
+
+  // ===== ОБРАБОТКА ТЕКСТА ДЛЯ СОЗДАНИЯ =====
+
+  @On('text')
+  async handleCreation(@Ctx() ctx: Context) {
+    const chatId = (ctx as any).chat?.id
+    if (!chatId) return
+
+    const noteState = this.noteCreationStates.get(chatId)
+    const productState = this.productCreationStates.get(chatId)
+    const lessonState = this.lessonCreationStates.get(chatId)
+
+    if (noteState) {
+      await this.handleNoteCreation(ctx, chatId, noteState)
+      return
+    }
+
+    if (productState) {
+      await this.handleProductCreation(ctx, chatId, productState)
+      return
+    }
+
+    if (lessonState) {
+      await this.handleLessonCreation(ctx, chatId, lessonState)
+      return
+    }
+  }
+
+  private async handleNoteCreation(ctx: Context, chatId: number, state: NoteCreationState) {
+    const text = (ctx as any).message?.text || ''
+
+    switch (state.step) {
+      case 'title':
+        state.title = text
+        state.step = 'text'
+        await ctx.reply('📝 Шаг 2 из 4\n\nВведите *текст статьи*:', { parse_mode: 'Markdown' })
+        break
+
+      case 'text':
+        state.text = text
+        state.step = 'img'
+        await ctx.reply('📝 Шаг 3 из 4\n\nОтправьте *ссылку на картинку* или "нет":', { parse_mode: 'Markdown' })
+        break
+
+      case 'img':
+        state.img =
+          text === 'нет' ? 'https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=600&h=400&fit=crop' : text
+        state.step = 'date'
+        await ctx.reply('📝 Шаг 4 из 4\n\nВведите *дату* ГГГГ-ММ-ДД или "сегодня":', { parse_mode: 'Markdown' })
+        break
+
+      case 'date':
+        state.date = text === 'сегодня' ? new Date().toISOString().split('T')[0] : text
+        const note = await this.notesService.create({
+          title: state.title,
+          text: state.text,
+          img: state.img || 'https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=600&h=400&fit=crop',
+          date: state.date ? new Date(state.date) : new Date(),
+          created_at: new Date(),
+        })
+        this.noteCreationStates.delete(chatId)
+        await ctx.reply(`✅ Статья создана!\n\n📝 *${note.title}*`, { parse_mode: 'Markdown' })
+        break
+    }
+  }
+
+  private async handleProductCreation(ctx: Context, chatId: number, state: ProductCreationState) {
+    const text = (ctx as any).message?.text || ''
+
+    switch (state.step) {
+      case 'title':
+        state.title = text
+        state.step = 'img'
+        await ctx.reply('📝 Шаг 2 из 10\n\nОтправьте *ссылку на картинку* или "нет":', { parse_mode: 'Markdown' })
+        break
+
+      case 'img':
+        state.img = text === 'нет' ? '' : text
+        state.step = 'price'
+        await ctx.reply('📝 Шаг 3 из 10\n\nВведите *цену* (только число):', { parse_mode: 'Markdown' })
+        break
+
+      case 'price':
+        state.price = text
+        state.step = 'category'
+        await ctx.reply('📝 Шаг 4 из 10\n\nВведите *категорию* товара:', { parse_mode: 'Markdown' })
+        break
+
+      case 'category':
+        state.category = text
+        state.step = 'technic'
+        await ctx.reply('📝 Шаг 5 из 10\n\nВведите *технику*:', { parse_mode: 'Markdown' })
+        break
+
+      case 'technic':
+        state.technic = text
+        state.step = 'diameter'
+        await ctx.reply('📝 Шаг 6 из 10\n\nВведите *диаметр*:', { parse_mode: 'Markdown' })
+        break
+
+      case 'diameter':
+        state.diameter = text
+        state.step = 'color'
+        await ctx.reply('📝 Шаг 7 из 10\n\nВведите *цвет*:', { parse_mode: 'Markdown' })
+        break
+
+      case 'color':
+        state.color = text
+        state.step = 'form'
+        await ctx.reply('📝 Шаг 8 из 10\n\nВведите *форму*:', { parse_mode: 'Markdown' })
+        break
+
+      case 'form':
+        state.form = text
+        state.step = 'material'
+        await ctx.reply('📝 Шаг 9 из 10\n\nВведите *материал*:', { parse_mode: 'Markdown' })
+        break
+
+      case 'material':
+        state.material = text
+        state.step = 'stock'
+        await ctx.reply('📝 Шаг 10 из 10\n\nВ наличии? (да/нет):', { parse_mode: 'Markdown' })
+        break
+
+      case 'stock':
+        state.stock = text
+        const product = await this.productsService.create({
+          title: state.title,
+          img: state.img || '',
+          price: state.price ? parseFloat(state.price) : 0,
+          category: state.category || '',
+          technic: state.technic || '',
+          diameter: state.diameter || '',
+          color: state.color || '',
+          form: state.form || '',
+          material: state.material || '',
+          stock: text.toLowerCase() === 'да',
+        } as any)
+        this.productCreationStates.delete(chatId)
+        await ctx.reply(`✅ Товар создан!\n\n🛍 *${product.title}*`, { parse_mode: 'Markdown' })
+        break
+    }
+  }
+
+  private async handleLessonCreation(ctx: Context, chatId: number, state: LessonCreationState) {
+    const text = (ctx as any).message?.text || ''
+
+    switch (state.step) {
+      case 'title':
+        state.title = text
+        state.step = 'url'
+        await ctx.reply('📝 Шаг 2 из 5\n\nВведите *URL* урока:', { parse_mode: 'Markdown' })
+        break
+
+      case 'url':
+        state.url = text
+        state.step = 'description'
+        await ctx.reply('📝 Шаг 3 из 5\n\nВведите *описание* урока:', { parse_mode: 'Markdown' })
+        break
+
+      case 'description':
+        state.description = text
+        state.step = 'img'
+        await ctx.reply('📝 Шаг 4 из 5\n\nОтправьте *ссылку на картинку* или "нет":', { parse_mode: 'Markdown' })
+        break
+
+      case 'img':
+        state.img = text === 'нет' ? '' : text
+        state.step = 'price'
+        await ctx.reply('📝 Шаг 5 из 5\n\nВведите *цену* (только число):', { parse_mode: 'Markdown' })
+        break
+
+      case 'price':
+        state.price = text
+        const lesson = await this.lessonsService.createLesson({
+          title: state.title,
+          url: state.url || '',
+          description: state.description || '',
+          img: state.img || '',
+          price: state.price ? parseFloat(state.price) : 0,
+        } as any)
+        this.lessonCreationStates.delete(chatId)
+        await ctx.reply(`✅ Урок создан!\n\n📚 *${lesson.title}*`, { parse_mode: 'Markdown' })
+        break
+    }
+  }
+
+  // ===== СТАТЬИ (старые команды) =====
 
   @Command('notes')
   async getNotes(@Ctx() ctx: Context) {
+    await this.listNotes(ctx)
+  }
+
+  private async listNotes(ctx: Context) {
     const notes = await this.notesService.findAll()
 
     if (notes.length === 0) {
@@ -72,152 +499,24 @@ export class TelegramUpdate {
       const date = new Date(note.created_at).toLocaleDateString('ru-RU')
       const preview = note.text?.slice(0, 100) || ''
 
-      await ctx.reply(
-        `📝 *${title}*\n📅 ${date}\n\n${preview}...`,
-        {
-          parse_mode: 'Markdown',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: '👁 Посмотреть', callback_data: `view_note_${note.id}` },
-                { text: '🗑 Удалить', callback_data: `delete_note_${note.id}` },
-              ],
+      await ctx.reply(`📝 *${title}*\n📅 ${date}\n\n${preview}...`, {
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '👁 Посмотреть', callback_data: `view_note_${note.id}` },
+              { text: '🗑 Удалить', callback_data: `delete_note_${note.id}` },
             ],
-          },
+          ],
         },
-      )
-    }
-  }
-
-  @Command('addnote')
-  async addNote(@Ctx() ctx: Context) {
-    const text = (ctx as any).message?.text || ''
-    const data = text.replace('/addnote', '').trim()
-
-    if (data) {
-      const parts = data.split('|').map((p: string) => p.trim())
-      const title = parts[0]
-      const content = parts[1] || ''
-      const img = parts[2] || 'https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=600&h=400&fit=crop'
-      const dateStr = parts[3]
-
-      if (!title) {
-        await ctx.reply('❌ Укажите хотя бы название. Пример:\n/addnote Название | Текст статьи | https://картинка.jpg')
-        return
-      }
-
-      const note = await this.notesService.create({
-        title,
-        text: content,
-        img,
-        date: dateStr ? new Date(dateStr) : new Date(),
-        created_at: new Date(),
       })
-
-      const createdDate = new Date(note.created_at).toLocaleDateString('ru-RU')
-      await ctx.reply(
-        `✅ Статья создана!\n\n📝 *${note.title}*\n📅 ${createdDate}`,
-        { parse_mode: 'Markdown' },
-      )
-    } else {
-      const chatId = (ctx as any).chat?.id
-      if (chatId) {
-        this.noteCreationStates.set(chatId, { step: 'title' })
-        await ctx.reply('📝 Шаг 1 из 4\n\nВведите *название статьи*:', { parse_mode: 'Markdown' })
-      }
     }
   }
 
-  @On('text')
-  async handleNoteCreation(@Ctx() ctx: Context) {
-    const chatId = (ctx as any).chat?.id
-    const state = chatId ? this.noteCreationStates.get(chatId) : undefined
-    if (!state) return
-
-    const text = (ctx as any).message?.text || ''
-
-    switch (state.step) {
-      case 'title':
-        state.title = text
-        state.step = 'text'
-        await ctx.reply(
-          '📝 Шаг 2 из 4\n\nВведите *текст статьи*:',
-          { parse_mode: 'Markdown' },
-        )
-        break
-
-      case 'text':
-        state.text = text
-        state.step = 'img'
-        await ctx.reply(
-          '📝 Шаг 3 из 4\n\nОтправьте *ссылку на картинку* или "нет":',
-          { parse_mode: 'Markdown' },
-        )
-        break
-
-      case 'img':
-        state.img = text === 'нет'
-          ? 'https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=600&h=400&fit=crop'
-          : text
-        state.step = 'date'
-        await ctx.reply(
-          '📝 Шаг 4 из 4\n\nВведите *дату* ГГГГ-ММ-ДД или "сегодня":',
-          { parse_mode: 'Markdown' },
-        )
-        break
-
-      case 'date':
-        state.date = text === 'сегодня' ? new Date().toISOString().split('T')[0] : text
-
-        const note = await this.notesService.create({
-          title: state.title,
-          text: state.text,
-          img: state.img || 'https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=600&h=400&fit=crop',
-          date: state.date ? new Date(state.date) : new Date(),
-          created_at: new Date(),
-        })
-
-        this.noteCreationStates.delete(chatId)
-
-        const createdDate = new Date(note.created_at).toLocaleDateString('ru-RU')
-        await ctx.reply(
-          `✅ Статья создана!\n\n📝 *${note.title}*\n📅 ${createdDate}`,
-          { parse_mode: 'Markdown' },
-        )
-        break
-    }
-  }
-
-  @Command('comments')
-  async getComments(@Ctx() ctx: Context) {
-    const notes = await this.notesService.findAll()
-
-    if (notes.length === 0) {
-      await ctx.reply('📭 Нет статей с комментариями')
-      return
-    }
-
-    for (const note of notes.slice(0, 5)) {
-      try {
-        const axios = require('axios')
-        const apiUrl = process.env.API_URL || 'http://localhost:3001'
-        const commentsRes = await axios.get(`${apiUrl}/notes/${note.id}/comments`)
-        const comments = commentsRes.data
-
-        await ctx.reply(
-          `📝 *${note.title}*\n💬 Комментариев: ${comments.length}`,
-          {
-            parse_mode: 'Markdown',
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: `👁 Показать комментарии (${comments.length})`, callback_data: `view_comments_${note.id}` }],
-              ],
-            },
-          },
-        )
-      } catch {
-      }
-    }
+  @Action('list_notes')
+  async actionListNotes(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery()
+    await this.listNotes(ctx)
   }
 
   @Action('add_note')
@@ -230,12 +529,6 @@ export class TelegramUpdate {
     }
   }
 
-  @Action('list_notes')
-  async actionListNotes(@Ctx() ctx: Context) {
-    await ctx.answerCbQuery()
-    await this.getNotes(ctx)
-  }
-
   @Action('list_comments')
   async actionListComments(@Ctx() ctx: Context) {
     await ctx.answerCbQuery()
@@ -246,10 +539,8 @@ export class TelegramUpdate {
   async actionListOrders(@Ctx() ctx: Context) {
     await ctx.answerCbQuery()
     const orders = await this.ordersService.findAll()
-    const text = orders
-      .map(o => `#${o.id} | ${o.name} | ${o.total}₽ | ${o.status}`)
-      .join('\n')
-    await ctx.reply(text || 'Нет заказов')
+    const text = orders.map(o => `#${o.id} | ${o.name} | ${o.total}₽ | ${o.status}`).join('\n')
+    await ctx.reply(text || '📭 Нет заказов')
   }
 
   @Action(/view_note_(.+)/)
@@ -293,7 +584,7 @@ export class TelegramUpdate {
       const note = await this.notesService.findOne(noteId)
       const axios = require('axios')
       const apiUrl = process.env.API_URL || 'http://localhost:3001'
-      const commentsRes = await axios.get(`${apiUrl}/notes/${noteId}/comments`)
+      const commentsRes = await axios.get(`${apiUrl}/api/comments/${noteId}`)
       const comments = commentsRes.data
 
       if (comments.length === 0) {
@@ -320,42 +611,67 @@ export class TelegramUpdate {
     }
   }
 
+  @Command('comments')
+  async getComments(@Ctx() ctx: Context) {
+    const notes = await this.notesService.findAll()
+
+    if (notes.length === 0) {
+      await ctx.reply('📭 Нет статей с комментариями')
+      return
+    }
+
+    for (const note of notes.slice(0, 5)) {
+      try {
+        const axios = require('axios')
+        const apiUrl = process.env.API_URL || 'http://localhost:3001'
+        const commentsRes = await axios.get(`${apiUrl}/api/comments/${note.id}`)
+        const comments = commentsRes.data
+
+        await ctx.reply(`📝 *${note.title}*\n💬 Комментариев: ${comments.length}`, {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: `👁 Показать комментарии (${comments.length})`, callback_data: `view_comments_${note.id}` }],
+            ],
+          },
+        })
+      } catch {}
+    }
+  }
+
   @Command('orders')
   async getOrders(@Ctx() ctx: Context) {
     const orders = await this.ordersService.findAll()
-    const text = orders
-      .map(o => `#${o.id} | ${o.name} | ${o.total}₽ | ${o.status}`)
-      .join('\n')
-    await ctx.reply(text || 'Нет заказов')
+    const text = orders.map(o => `#${o.id} | ${o.name} | ${o.total}₽ | ${o.status}`).join('\n')
+    await ctx.reply(text || '📭 Нет заказов')
   }
 
   @Command('products')
   async getProducts(@Ctx() ctx: Context) {
-    const products = await this.productsService.findAll()
-    const text = products
-      .map((p: any) => `${p.id} | ${p.title} | ${p.price}₽`)
-      .join('\n')
-    await ctx.reply(text || 'Нет товаров')
+    await this.listProducts(ctx)
   }
 
   @Action(/order_shipped_(.+)/)
   async shipped(@Ctx() ctx: Context) {
     const id = (ctx as any).match?.[1]
+    await ctx.answerCbQuery()
     await this.ordersService.update(id, { status: 'shipped' })
-    await ctx.reply(`🚚 Order ${id} shipped`)
+    await ctx.reply(`🚚 Заказ ${id} отправлен`)
   }
 
   @Action(/order_done_(.+)/)
   async done(@Ctx() ctx: Context) {
     const id = (ctx as any).match?.[1]
+    await ctx.answerCbQuery()
     await this.ordersService.update(id, { status: 'done' })
-    await ctx.reply(`✅ Order ${id} done`)
+    await ctx.reply(`✅ Заказ ${id} выполнен`)
   }
 
   @Action(/order_cancel_(.+)/)
   async cancel(@Ctx() ctx: Context) {
     const id = (ctx as any).match?.[1]
+    await ctx.answerCbQuery()
     await this.ordersService.update(id, { status: 'canceled' })
-    await ctx.reply(`❌ Order ${id} canceled`)
+    await ctx.reply(`❌ Заказ ${id} отменён`)
   }
 }

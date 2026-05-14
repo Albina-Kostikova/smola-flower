@@ -23,7 +23,7 @@ export function ArticleCard({ note }: ArticleCardProps) {
 
   return (
     <article className="bg-white max-h-150 rounded-2xl overflow-hidden shadow-lg flex flex-col md:flex-row">
-      <div className="md:w-1/2 overflow-hidden">
+      <div className="md:w-[48%] overflow-hidden">
         <Image
         height={570}
         width={445}
@@ -32,7 +32,7 @@ export function ArticleCard({ note }: ArticleCardProps) {
           className="w-full h-full object-cover rounded-2xl  min-h-75"
         />
       </div>
-      <div className="md:w-1/2 p-6 md:p-9 flex flex-col overflow-y-scroll">
+      <div className="md:w-[62%] px-6 pb-6 pt-2 flex flex-col justify-start overflow-y-scroll">
         <h6 className="text-(--color-primary) text-sm font-medium mb-5">{formatDate(note.created_at)}</h6>
         <h4 className="tall text-3xl md:text-4xl mb-4">{note.title}</h4>
         <p className="text-gray-600 leading-relaxed text-base">{note.text}</p>

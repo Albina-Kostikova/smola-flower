@@ -46,4 +46,7 @@ export class LessonsService {
 
     return data
   }
+  async deleteLesson(id: string) {
+    //Создать функции delete и другие с телеграма
+  }
 }

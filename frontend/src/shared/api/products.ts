@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || process.env.BACKEND_A
 
 export async function getAllProducts(): Promise<Product[]> {
   const res = await fetch(`${API_URL}/api/products`, {
-    next: { revalidate: 3600 }
+    next: { revalidate: 3600 },
   })
 
   if (!res.ok) {
@@ -16,7 +16,7 @@ export async function getAllProducts(): Promise<Product[]> {
 
 export async function getProductById(id: string): Promise<Product> {
   const res = await fetch(`${API_URL}/api/products/${id}`, {
-    cache: 'no-store'
+    cache: 'no-store',
   })
 
   if (!res.ok) {

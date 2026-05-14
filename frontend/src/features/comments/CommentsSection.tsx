@@ -1,22 +1,24 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { Comment, CreateCommentDto } from '@/entities/comment'
+import type { Comment } from '@/entities/comment'
 import { getCommentsByNoteId, createComment } from '@/shared/api/comments'
 import { PinkButton } from '@/shared/ui/Buttons'
-import Image from 'next/image'
+
 interface CommentsSectionProps {
   noteId: string | null
 }
 
-const AVATARS = ['avatar1', 'avatar2', 'avatar3', 'avatar4', 'avatar5', 'avatar6', 'avatar7', 'avatar8']
+const AVATARS = ['alex.jpg', 'maria.jpg', 'john.jpg', 'sofia.jpg', 'leona.jpg', 'anna.jpg', 'maxima.jpg', 'kate.jpg']
 
 export function CommentsSection({ noteId }: CommentsSectionProps) {
   const [comments, setComments] = useState<Comment[]>([])
   const [newName, setNewName] = useState('')
   const [newText, setNewText] = useState('')
-  const [selectedAvatar, setSelectedAvatar] = useState('avatar2')
+  const [selectedAvatar, setSelectedAvatar] = useState('alex.jpg')
   const [error, setError] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     if (noteId) {
@@ -42,19 +44,34 @@ export function CommentsSection({ noteId }: CommentsSectionProps) {
 
     if (!noteId) return
 
+    const name = newName.trim()
+    const text = newText.trim()
+    const avatar = selectedAvatar
+
+    setNewText('')
+    setIsSending(true)
+    setSuccessMessage('Ваш комментарий отправляется…')
+
     try {
       const newComment = await createComment(noteId, {
-        name: newName.trim(),
-        avatar_seed: selectedAvatar,
-        text: newText.trim(),
+        name,
+        avatar_seed: avatar,
+        text,
         is_owner: false,
       })
 
       setComments(prev => [...prev, newComment])
-      setNewText('')
+      setSuccessMessage('Комментарий опубликован!')
+
+      setTimeout(() => setSuccessMessage(''), 10000)
     } catch (err) {
       console.error('Failed to add comment:', err)
       setError('Ошибка отправки комментария')
+      setSuccessMessage('')
+
+      setNewText(text)
+    } finally {
+      setIsSending(false)
     }
   }
 
@@ -71,8 +88,8 @@ export function CommentsSection({ noteId }: CommentsSectionProps) {
   }
 
   return (
-    <section className="bg-white rounded-2xl shadow-lg p-6 flex flex-col">
-      <div className="bg-gray-200 rounded-2xl text-grey pt-5 space-y-4">
+    <section className="bg-white rounded-2xl shadow-lg flex flex-col ml-3">
+      <div className="bg-(--color-accent) rounded-2xl text-grey pt-5 space-y-4 p-7">
         <h4 className="text-lg font-semibold text-gray-800">Оставьте комментарий</h4>
 
         <div>
@@ -85,13 +102,9 @@ export function CommentsSection({ noteId }: CommentsSectionProps) {
                 className={`w-12 h-12 rounded-full overflow-hidden border-2 transition-all duration-200 ${
                   selectedAvatar === seed
                     ? 'border-(--color-primary) scale-110 shadow-md'
-                    : 'border-gray-200 hover:border-(--color-secondary)'
+                    : 'border-white hover:border-(--color-secondary)'
                 }`}>
-                <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`}
-                  alt={`Аватар ${seed}`}
-                  className="w-full h-full object-cover"
-                />
+                <img src={`/images/${seed}`} alt={`Аватар ${seed}`} className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
@@ -104,7 +117,7 @@ export function CommentsSection({ noteId }: CommentsSectionProps) {
             value={newName}
             onChange={e => setNewName(e.target.value)}
             placeholder="Имя"
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-4xl focus:outline-none focus:ring-2 focus:ring-(--color-primary) focus:border-transparent transition-all"
+            className="w-full px-4 py-2.5 bg-white border border-gray-400 rounded-4xl focus:outline-none focus:ring-2 focus:ring-(--color-primary) focus:text-(--color-primary) focus:border-transparent transition-all"
           />
         </div>
 
@@ -116,20 +129,23 @@ export function CommentsSection({ noteId }: CommentsSectionProps) {
             onKeyDown={handleKeyDown}
             placeholder="Напишите ваш комментарий..."
             rows={3}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-4xl focus:outline-none focus:ring-2 focus:ring-(--color-primary) focus:border-transparent transition-all resize-none"
+            className="w-full px-4 py-2.5 bg-white border border-gray-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-(--color-primary) focus:border-transparent transition-all resize-none focus:text-(--color-primary)"
           />
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
-
-        <PinkButton
-          onClick={addComment}
-          text="Отправить комментарий"
-          className="w-full py-3 bg-(--color-primary) text-white font-semibold rounded-xl hover:opacity-90 transition-all duration-200 active:scale-95">
-        </PinkButton>
+        {successMessage && <p className="text-green-600 text-sm font-medium">{successMessage}</p>}
+        <div className="flex justify-center">
+          <PinkButton
+            onClick={addComment}
+            disabled={isSending}
+            text={isSending ? 'Отправка…' : 'Отправить комментарий'}
+            className={`py-3 self-center border-none bg-(--color-primary) text-white font-semibold rounded-2xl transition-all duration-200 active:scale-95 ${isSending ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'}`}
+          />
+        </div>
       </div>
-      <h4 className="w-full border-b border-gray-600">Комментариев: {comments.length}</h4>
-      <div className="flex-1 max-h-125 overflow-y-auto space-y-4 mb-6 pr-2 scrollbar-thin">
+      <h4 className="w-full border-b mt-5 pl-1 border-gray-600">Комментариев: {comments.length}</h4>
+      <div className="flex-1 max-h-125 overflow-y-auto space-y-4 p-5 mb-6 pr-2 scrollbar-thin">
         {comments.length > 0 ? (
           comments.map(comment => (
             <div key={comment.id} className={`flex gap-3 items-start ${comment.is_owner ? 'flex-row-reverse' : ''}`}>
@@ -137,12 +153,13 @@ export function CommentsSection({ noteId }: CommentsSectionProps) {
                 className={`w-10 h-10 rounded-full overflow-hidden shrink-0 border-2 ${
                   comment.is_owner ? 'border-(--color-primary)' : 'border-gray-200'
                 }`}>
-                <Image
-                  width={10}
-                  height={10}
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.avatar_seed}`}
+                <img
+                  src={`/images/${comment.avatar_seed || 'alex.jpg'}`}
+                  onError={e => {
+                    e.currentTarget.src = '/images/alex.jpg'
+                  }}
                   alt={comment.name}
-                  className="object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
 
@@ -151,7 +168,7 @@ export function CommentsSection({ noteId }: CommentsSectionProps) {
                   <span className="text-sm font-semibold text-gray-800">
                     {comment.is_owner ? `${comment.name} 👑` : comment.name}
                   </span>
-                  <span className="text-xs text-gray-400">{formatTime(comment.created_at)}</span>
+                  <span className="text-xs text-gray-100">{formatTime(comment.created_at)}</span>
                 </div>
                 <div
                   className={`inline-block px-4 py-2.5 text-sm leading-relaxed ${

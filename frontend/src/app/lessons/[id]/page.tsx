@@ -9,7 +9,7 @@ import Image from 'next/image'
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:3001'
 
-export default function LessonPage({ params }: { params: { id: string }}) {
+export default function LessonPage({ params }: { params: { id: string } }) {
   const [lesson, setLesson] = useState<Lesson | null>(null)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -93,13 +93,13 @@ export default function LessonPage({ params }: { params: { id: string }}) {
       <div className="flex flex-col mx-auto max-w-6xl mb-25 mt-10">
         <Breadcrumbs />
         <div className="flex flex-col justify-center items-center h-64">
-          <Image src="/images/spiner.svg" alt="Loading..." width={200} height={200}/>
-          <p>{ error || 'Загрузка...'}</p>
+          <Image src="/images/spiner.svg" alt="Loading..." width={200} height={200} />
+          <p>{error || 'Загрузка...'}</p>
         </div>
       </div>
     )
   }
-    const breadcrumbs = [
+  const breadcrumbs = [
     { label: 'Главная', href: '/' },
     { label: 'Обучение', href: '/lessons' },
     { label: lesson.title, href: `/lessons/${lesson.id}` },
@@ -107,47 +107,52 @@ export default function LessonPage({ params }: { params: { id: string }}) {
 
   return (
     <div className="flex flex-col mx-auto max-w-6xl mb-25 mt-10">
-    <Breadcrumbs items={breadcrumbs}/>
-    <div className="flex flex-col items-center justify-center">
-      <h2 className="tall text-xl font-light mb-10">Учебное видео "{lesson.title}"</h2>
-      <div className="flex">
-        <Image src={lesson.img} alt="Картинка урока" className="object-cover rounded-4xl mr-8" width={350} height={280}/>
-        <div className="flex flex-col gap-5">
-          <input 
-          className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
-          type="text" 
-          placeholder="Имя" 
-          name="fio"
-          value={formData.fio} 
-          onChange={handleInputChange} 
+      <Breadcrumbs items={breadcrumbs} />
+      <div className="flex flex-col items-center justify-center">
+        <h2 className="tall text-xl font-light mb-10">Учебное видео "{lesson.title}"</h2>
+        <div className="flex">
+          <Image
+            src={lesson.img}
+            alt="Картинка урока"
+            className="object-cover rounded-4xl mr-8"
+            width={350}
+            height={280}
           />
-          <input 
-          className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
-          type="email" 
-          placeholder="Электронная почта" 
-          name="email"
-          value={formData.email} 
-          onChange={handleInputChange} 
-          />
-          <input 
-          className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
-          type="tel" 
-          placeholder="Номер телефона" 
-          name="phone"
-          value={formData.phone} 
-          onChange={handleInputChange} 
-          />
-          <div className="flex gap-2.5 mt-12">
-            <Image src="/images/chain.svg" alt="" width={50} height={50}/>
-            <p>
-              После отправки заявки администратор свяжется с Вами для оплаты, затем на указанную Вами почту придет ссылка на
-              видео.
-            </p>
+          <div className="flex flex-col gap-5">
+            <input
+              className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
+              type="text"
+              placeholder="Имя"
+              name="fio"
+              value={formData.fio}
+              onChange={handleInputChange}
+            />
+            <input
+              className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
+              type="email"
+              placeholder="Электронная почта"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+            <input
+              className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
+              type="tel"
+              placeholder="Номер телефона"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+            />
+            <div className="flex gap-2.5 mt-12">
+              <Image src="/images/chain.svg" alt="" width={50} height={50} />
+              <p>
+                После отправки заявки администратор свяжется с Вами для оплаты, затем на указанную Вами почту придет
+                ссылка на видео.
+              </p>
+            </div>
           </div>
         </div>
-        
-      </div>
-      <div className="flex flex-col items-center justify-center mt-12">
+        <div className="flex flex-col items-center justify-center mt-12">
           <PinkButton
             onClick={handleSendLessonOrder}
             text={lesson.title === 'Заливка' ? 'Получить в подарок' : 'Отправить заявку'}
@@ -164,7 +169,7 @@ export default function LessonPage({ params }: { params: { id: string }}) {
             .
           </p>
         </div>
-    </div>
+      </div>
     </div>
   )
 }

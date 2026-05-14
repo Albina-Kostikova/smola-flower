@@ -79,7 +79,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
         totalPrice,
       }
 
-      const response = await fetch('http://localhost:3001/api/orders', {
+      const response = await fetch('http://localhost:3001/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

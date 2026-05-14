@@ -1,38 +1,28 @@
-import { Controller, Get, Param, Post, Body, Delete, Inject, forwardRef } from '@nestjs/common'
+import { Controller, Get, Param, Post, Body, Delete } from '@nestjs/common'
 import { CommentsService } from './comments.service'
-import { NotesService } from '../notes/notes.service'
-import { TelegramService } from '../../integrations/telegram/telegram.service'
 import { Comment } from './comments.entity'
 
-@Controller('notes/:noteId/comments')
+@Controller('/comments')
 export class CommentsController {
   constructor(
     private commentsService: CommentsService,
-    @Inject(forwardRef(() => NotesService))
-    private notesService: NotesService,
-    private telegramService: TelegramService,
   ) {}
 
-  @Get()
+  @Get(':noteId')
   async findByNoteId(@Param('noteId') noteId: string): Promise<Comment[]> {
     return this.commentsService.findByNoteId(noteId)
   }
 
   @Post()
-  async create(@Param('noteId') noteId: string, @Body() commentData: Partial<Comment>): Promise<Comment> {
+  async create(
+    @Body() body: { noteId: string; name: string; text: string; avatar_seed: string; is_owner: boolean },
+  ): Promise<Comment> {
+    const { noteId, ...commentData } = body
     const comment = await this.commentsService.create({ ...commentData, note_id: noteId })
 
-    try {
-      const note = await this.notesService.findOne(noteId)
-      await this.telegramService.sendCommentNotification({
-        name: commentData.name || 'Аноним',
-        text: commentData.text || '',
-        noteTitle: note.title,
-        noteId: noteId,
-      })
-    } catch (err) {
+    this.commentsService.sendNotification(noteId, commentData).catch(err => {
       console.error('Failed to send comment notification:', err)
-    }
+    })
 
     return comment
   }
