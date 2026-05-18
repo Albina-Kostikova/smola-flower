@@ -27,28 +27,27 @@ export function NotesList({ notes, currentNoteId, onNoteSelect }: NotesListProps
   }
 
   return (
-    <aside className="bg-white rounded-2xl shadow-lg h-fit">
+    <aside className="bg-white rounded-2xl shadow-lg lg:w-md h-fit">
       <h2 className="cursive text-2xl mb-5 text-(--color-primary)">Другие статьи</h2>
       <div className="space-y-6">
         {otherNotes.map(note => (
           <div
             key={note.id}
             onClick={() => onNoteSelect(note.id)}
-            className="flex gap-4 w-111 rounded-xl hover:bg-(--color-accent) transition-colors cursor-pointer"
-          >
+            className="flex gap-3 sm:gap-4 w-full rounded-xl hover:bg-(--color-accent) transition-colors cursor-pointer">
             <Image
-              width={160}
-              height={285}
+              width={180}
+              height={280}
               src={note.img}
               alt={note.title}
-              className="rounded-lg object-cover shrink-0"
+              className="rounded-lg object-cover shrink-0 w-30 sm:w-28 lg:w-45 h-40 sm:h-36 lg:h-56"
               loading="lazy"
             />
-            <div className="min-w-0 flex flex-col justify-between">
+            <div className="min-w-0 flex flex-col justify-between flex-1">
               <h6 className="text-(--color-primary) text-xs mb-1">{formatDate(note.created_at)}</h6>
-              <h4 className="tall text-sm    mb-1 leading-tight">{note.title}</h4>
-              <p className="text-gray-500 text-xs line-clamp-5">{note.text}</p>
-              <InfoButton className="text-sm mt-3" text="Продолжить чтение" />
+              <h4 className="tall text-xs sm:text-sm mb-1 leading-tight">{note.title}</h4>
+              <p className="text-gray-500 text-xs line-clamp-3 sm:line-clamp-5">{note.text}</p>
+              <InfoButton className="text-xs sm:text-sm mt-2 sm:mt-3" text="Продолжить чтение" />
             </div>
           </div>
         ))}

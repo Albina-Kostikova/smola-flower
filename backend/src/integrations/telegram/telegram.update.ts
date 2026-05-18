@@ -1,6 +1,7 @@
 import { Update, Start, Command, Ctx, Action, On } from 'nestjs-telegraf'
 import { Context } from 'telegraf'
-import { Injectable, Inject, forwardRef } from '@nestjs/common'
+import { Injectable, Inject, forwardRef, UnauthorizedException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { OrdersService } from '../../modules/orders/orders.service'
 import { ProductService } from '../../modules/products/products.service'
 import { NotesService } from '../../modules/notes/notes.service'
@@ -42,6 +43,7 @@ export class TelegramUpdate {
   private noteCreationStates: Map<number, NoteCreationState> = new Map()
   private productCreationStates: Map<number, ProductCreationState> = new Map()
   private lessonCreationStates: Map<number, LessonCreationState> = new Map()
+  private adminChatId: number
 
   constructor(
     @Inject(forwardRef(() => OrdersService))
@@ -52,10 +54,35 @@ export class TelegramUpdate {
     private notesService: NotesService,
     @Inject(forwardRef(() => LessonsService))
     private lessonsService: LessonsService,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    const chatIdStr = this.configService.get<string>('TELEGRAM_CHAT_ID')
+    if (chatIdStr) {
+      const parsed = parseInt(chatIdStr, 10)
+      this.adminChatId = isNaN(parsed) ? 0 : parsed
+    } else {
+      this.adminChatId = 0
+    }
+  }
+
+  private isAdmin(ctx: Context): boolean {
+    const userId = (ctx as any).from?.id
+    const chatId = (ctx as any).chat?.id
+    return userId === this.adminChatId || chatId === this.adminChatId
+  }
+
+  private async checkAdmin(ctx: Context): Promise<boolean> {
+    if (!this.isAdmin(ctx)) {
+      await ctx.reply('⛔ Доступ запрещён. Вы не являетесь администратором.')
+      return false
+    }
+    return true
+  }
 
   @Start()
   async start(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
+
     await ctx.reply(
       `🌸 SMOLA Flowers — Админ-панель
 
@@ -77,6 +104,7 @@ export class TelegramUpdate {
 
   @Action('menu_products')
   async menuProducts(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     await ctx.reply('🛍 Управление товарами:', {
       reply_markup: {
@@ -91,6 +119,7 @@ export class TelegramUpdate {
 
   @Action('menu_lessons')
   async menuLessons(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     await ctx.reply('📚 Управление уроками:', {
       reply_markup: {
@@ -105,6 +134,7 @@ export class TelegramUpdate {
 
   @Action('menu_notes')
   async menuNotes(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     await ctx.reply('📝 Управление статьями:', {
       reply_markup: {
@@ -119,6 +149,7 @@ export class TelegramUpdate {
 
   @Action('back_to_start')
   async backToStart(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     await this.start(ctx)
   }
@@ -127,20 +158,20 @@ export class TelegramUpdate {
 
   @Action('list_products')
   async listProducts(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     try {
-      const products = await this.productsService.findAll()
+      const products = await this.productsService.getAllProducts()
 
       if (products.length === 0) {
         await ctx.reply('📭 Нет товаров')
         return
       }
 
-      // Показываем первые 10 товаров
       for (const product of products.slice(0, 10)) {
-        const title = (product as any).title || (product as any).name || 'Без названия'
+        const title = (product as any).title || 'Без названия'
         const price = (product as any).price || 'не указана'
-        await ctx.reply(`🛍 *${title}*\n💰 ${price} сом`, {
+        await ctx.reply(`🛍 *${title}*\n💰 ${price} руб.`, {
           parse_mode: 'Markdown',
           reply_markup: {
             inline_keyboard: [
@@ -152,36 +183,38 @@ export class TelegramUpdate {
           },
         })
       }
-    } catch (err) {
+    } catch {
       await ctx.reply('❌ Ошибка загрузки товаров')
     }
   }
 
   @Action('add_product')
   async addProduct(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const chatId = (ctx as any).chat?.id
     if (chatId) {
       this.productCreationStates.set(chatId, { step: 'title' })
-      await ctx.reply('📝 Шаг 1 из 5\n\nВведите *название товара*:', { parse_mode: 'Markdown' })
+      await ctx.reply('📝 Шаг 1 из 10\n\nВведите *название товара*:', { parse_mode: 'Markdown' })
     }
   }
 
   @Action(/view_product_(.+)/)
   async viewProduct(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const id = (ctx as any).match?.[1]
     if (!id) return
 
     try {
-      const product = await this.productsService.findOne(id)
+      const product = await this.productsService.getProductById(id)
       const title = (product as any).title || 'Без названия'
       const price = (product as any).price || 'не указана'
       const category = (product as any).category || ''
       const material = (product as any).material || ''
       const img = (product as any).img || ''
 
-      const info = `🛍 *${title}*\n💰 ${price} сом\n📂 ${category}\n🧵 ${material}`
+      const info = `🛍 *${title}*\n💰 ${price} руб.\n📂 ${category}\n🧵 ${material}`
 
       if (img) {
         await ctx.replyWithPhoto(img, {
@@ -198,12 +231,13 @@ export class TelegramUpdate {
 
   @Action(/delete_product_(.+)/)
   async deleteProduct(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const id = (ctx as any).match?.[1]
     if (!id) return
 
     try {
-      await this.productsService.delete(id)
+      await this.productsService.deleteProduct(id)
       await ctx.reply('🗑 Товар удалён')
     } catch {
       await ctx.reply('❌ Ошибка удаления')
@@ -214,6 +248,7 @@ export class TelegramUpdate {
 
   @Action('list_lessons')
   async listLessons(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     try {
       const lessons = await this.lessonsService.getAllLessons()
@@ -246,16 +281,18 @@ export class TelegramUpdate {
 
   @Action('add_lesson')
   async addLesson(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const chatId = (ctx as any).chat?.id
     if (chatId) {
       this.lessonCreationStates.set(chatId, { step: 'title' })
-      await ctx.reply('📝 Шаг 1 из 4\n\nВведите *название урока*:', { parse_mode: 'Markdown' })
+      await ctx.reply('📝 Шаг 1 из 5\n\nВведите *название урока*:', { parse_mode: 'Markdown' })
     }
   }
 
   @Action(/view_lesson_(.+)/)
   async viewLesson(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const id = (ctx as any).match?.[1]
     if (!id) return
@@ -264,15 +301,18 @@ export class TelegramUpdate {
       const lesson = await this.lessonsService.getLessonById(id)
       const title = (lesson as any).title || 'Без названия'
       const desc = (lesson as any).description || ''
+      const price = (lesson as any).price || 'не указана'
       const img = (lesson as any).img || ''
+
+      const info = `📚 *${title}*\n💰 ${price} руб.\n\n📖 ${desc}`
 
       if (img) {
         await ctx.replyWithPhoto(img, {
-          caption: `📚 *${title}*\n\n📖 ${desc}`,
+          caption: info,
           parse_mode: 'Markdown',
         })
       } else {
-        await ctx.reply(`📚 *${title}*\n\n📖 ${desc}`, { parse_mode: 'Markdown' })
+        await ctx.reply(info, { parse_mode: 'Markdown' })
       }
     } catch {
       await ctx.reply('❌ Урок не найден')
@@ -281,12 +321,13 @@ export class TelegramUpdate {
 
   @Action(/delete_lesson_(.+)/)
   async deleteLesson(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const id = (ctx as any).match?.[1]
     if (!id) return
 
     try {
-      await this.lessonsService.delete(id)
+      await this.lessonsService.deleteLesson(id)
       await ctx.reply('🗑 Урок удалён')
     } catch {
       await ctx.reply('❌ Ошибка удаления')
@@ -297,6 +338,7 @@ export class TelegramUpdate {
 
   @On('text')
   async handleCreation(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     const chatId = (ctx as any).chat?.id
     if (!chatId) return
 
@@ -345,7 +387,7 @@ export class TelegramUpdate {
 
       case 'date':
         state.date = text === 'сегодня' ? new Date().toISOString().split('T')[0] : text
-        const note = await this.notesService.create({
+        const note = await this.notesService.createNote({
           title: state.title,
           text: state.text,
           img: state.img || 'https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=600&h=400&fit=crop',
@@ -418,7 +460,7 @@ export class TelegramUpdate {
 
       case 'stock':
         state.stock = text
-        const product = await this.productsService.create({
+        const product = await this.productsService.createProduct({
           title: state.title,
           img: state.img || '',
           price: state.price ? parseFloat(state.price) : 0,
@@ -482,12 +524,13 @@ export class TelegramUpdate {
   // ===== СТАТЬИ (старые команды) =====
 
   @Command('notes')
-  async getNotes(@Ctx() ctx: Context) {
+  async getAllNotes(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await this.listNotes(ctx)
   }
 
   private async listNotes(ctx: Context) {
-    const notes = await this.notesService.findAll()
+    const notes = await this.notesService.getAllNotes()
 
     if (notes.length === 0) {
       await ctx.reply('📭 Нет статей')
@@ -515,12 +558,14 @@ export class TelegramUpdate {
 
   @Action('list_notes')
   async actionListNotes(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     await this.listNotes(ctx)
   }
 
   @Action('add_note')
   async actionAddNote(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const chatId = (ctx as any).chat?.id
     if (chatId) {
@@ -531,26 +576,29 @@ export class TelegramUpdate {
 
   @Action('list_comments')
   async actionListComments(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     await this.getComments(ctx)
   }
 
   @Action('list_orders')
   async actionListOrders(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
-    const orders = await this.ordersService.findAll()
+    const orders = await this.ordersService.getAllOrders()
     const text = orders.map(o => `#${o.id} | ${o.name} | ${o.total}₽ | ${o.status}`).join('\n')
     await ctx.reply(text || '📭 Нет заказов')
   }
 
   @Action(/view_note_(.+)/)
   async actionViewNote(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const id = (ctx as any).match?.[1]
     if (!id) return
 
     try {
-      const note = await this.notesService.findOne(id)
+      const note = await this.notesService.getNoteById(id)
       await ctx.replyWithPhoto(note.img, {
         caption: `📝 *${note.title}*\n\n📅 ${new Date(note.created_at).toLocaleDateString('ru-RU')}\n\n${note.text}`,
         parse_mode: 'Markdown',
@@ -562,12 +610,13 @@ export class TelegramUpdate {
 
   @Action(/delete_note_(.+)/)
   async actionDeleteNote(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const id = (ctx as any).match?.[1]
     if (!id) return
 
     try {
-      await this.notesService.delete(id)
+      await this.notesService.deleteNote(id)
       await ctx.reply('🗑 Статья удалена')
     } catch {
       await ctx.reply('❌ Ошибка удаления')
@@ -576,12 +625,13 @@ export class TelegramUpdate {
 
   @Action(/view_comments_(.+)/)
   async actionViewComments(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await ctx.answerCbQuery()
     const noteId = (ctx as any).match?.[1]
     if (!noteId) return
 
     try {
-      const note = await this.notesService.findOne(noteId)
+      const note = await this.notesService.getNoteById(noteId)
       const axios = require('axios')
       const apiUrl = process.env.API_URL || 'http://localhost:3001'
       const commentsRes = await axios.get(`${apiUrl}/api/comments/${noteId}`)
@@ -613,7 +663,8 @@ export class TelegramUpdate {
 
   @Command('comments')
   async getComments(@Ctx() ctx: Context) {
-    const notes = await this.notesService.findAll()
+    if (!(await this.checkAdmin(ctx))) return
+    const notes = await this.notesService.getAllNotes()
 
     if (notes.length === 0) {
       await ctx.reply('📭 Нет статей с комментариями')
@@ -641,37 +692,42 @@ export class TelegramUpdate {
 
   @Command('orders')
   async getOrders(@Ctx() ctx: Context) {
-    const orders = await this.ordersService.findAll()
+    if (!(await this.checkAdmin(ctx))) return
+    const orders = await this.ordersService.getAllOrders()
     const text = orders.map(o => `#${o.id} | ${o.name} | ${o.total}₽ | ${o.status}`).join('\n')
     await ctx.reply(text || '📭 Нет заказов')
   }
 
   @Command('products')
   async getProducts(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     await this.listProducts(ctx)
   }
 
   @Action(/order_shipped_(.+)/)
   async shipped(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     const id = (ctx as any).match?.[1]
     await ctx.answerCbQuery()
-    await this.ordersService.update(id, { status: 'shipped' })
+    await this.ordersService.updateOrder(id, { status: 'shipped' })
     await ctx.reply(`🚚 Заказ ${id} отправлен`)
   }
 
   @Action(/order_done_(.+)/)
   async done(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     const id = (ctx as any).match?.[1]
     await ctx.answerCbQuery()
-    await this.ordersService.update(id, { status: 'done' })
+    await this.ordersService.updateOrder(id, { status: 'done' })
     await ctx.reply(`✅ Заказ ${id} выполнен`)
   }
 
   @Action(/order_cancel_(.+)/)
   async cancel(@Ctx() ctx: Context) {
+    if (!(await this.checkAdmin(ctx))) return
     const id = (ctx as any).match?.[1]
     await ctx.answerCbQuery()
-    await this.ordersService.update(id, { status: 'canceled' })
+    await this.ordersService.updateOrder(id, { status: 'canceled' })
     await ctx.reply(`❌ Заказ ${id} отменён`)
   }
 }

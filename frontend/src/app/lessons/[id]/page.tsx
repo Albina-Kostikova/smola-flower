@@ -106,70 +106,70 @@ export default function LessonPage({ params }: { params: { id: string } }) {
   ]
 
   return (
-    <div className="flex flex-col mx-auto max-w-6xl mb-25 mt-10">
-      <Breadcrumbs items={breadcrumbs} />
-      <div className="flex flex-col items-center justify-center">
-        <h2 className="tall text-xl font-light mb-10">Учебное видео "{lesson.title}"</h2>
-        <div className="flex">
-          <Image
-            src={lesson.img}
-            alt="Картинка урока"
-            className="object-cover rounded-4xl mr-8"
-            width={350}
-            height={280}
-          />
-          <div className="flex flex-col gap-5">
-            <input
-              className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
-              type="text"
-              placeholder="Имя"
-              name="fio"
-              value={formData.fio}
-              onChange={handleInputChange}
-            />
-            <input
-              className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
-              type="email"
-              placeholder="Электронная почта"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-            <input
-              className="rounded-2xl h-15 p-4 text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
-              type="tel"
-              placeholder="Номер телефона"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-            />
-            <div className="flex gap-2.5 mt-12">
-              <Image src="/images/chain.svg" alt="" width={50} height={50} />
-              <p>
-                После отправки заявки администратор свяжется с Вами для оплаты, затем на указанную Вами почту придет
-                ссылка на видео.
+    <div className="flex flex-col mx-auto max-w-6xl mb-25 mt-10 px-4 lg:px-0">
+          <Breadcrumbs items={breadcrumbs} />
+          <div className="flex flex-col items-center justify-center">
+            <h2 className="tall text-lg sm:text-xl font-light mb-6 sm:mb-10 text-center">Учебное видео "{lesson.title}"</h2>
+            <div className="flex flex-col lg:flex-row">
+              <Image
+                src={lesson.img}
+                alt="Картинка урока"
+                className="object-cover rounded-4xl lg:mr-8 w-full max-w-sm lg:max-w-none h-auto"
+                width={350}
+                height={280}
+              />
+              <div className="flex flex-col gap-3 sm:gap-5 mt-4 lg:mt-0">
+                <input
+                  className="rounded-2xl h-12 sm:h-15 p-3 sm:p-4 text-sm sm:text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
+                  type="text"
+                  placeholder="Имя"
+                  name="fio"
+                  value={formData.fio}
+                  onChange={handleInputChange}
+                />
+                <input
+                  className="rounded-2xl h-12 sm:h-15 p-3 sm:p-4 text-sm sm:text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
+                  type="email"
+                  placeholder="Электронная почта"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
+                <input
+                  className="rounded-2xl h-12 sm:h-15 p-3 sm:p-4 text-sm sm:text-lg border border-black focus:border-(--color-secondary) text-gray-700 outline-none focus:text-(--color-primary)"
+                  type="tel"
+                  placeholder="Номер телефона"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                />
+                <div className="flex gap-2.5 mt-6 sm:mt-12">
+                  <Image src="/images/chain.svg" alt="" width={40} height={40} className="sm:w-12.5 sm:h-12.5" />
+                  <p className="text-sm sm:text-base">
+                    После отправки заявки администратор свяжется с Вами для оплаты, затем на указанную Вами почту придет
+                    ссылка на видео.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col items-center justify-center mt-8 sm:mt-12">
+              <PinkButton
+                onClick={handleSendLessonOrder}
+                text={lesson.title === 'Заливка' ? 'Получить в подарок' : 'Отправить заявку'}
+              />
+              <p className="text-xs max-w-full sm:max-w-100 text-gray-600 mt-4 text-center px-4 sm:px-0">
+                Нажимая на кнопку, вы подтверждаете, что ознакомились с{' '}
+                <a href="#" className="text-(--color-primary) underline">
+                  политикой конфиденциальности
+                </a>{' '}
+                и даете согласие на{' '}
+                <a href="#" className="text-(--color-primary) underline">
+                  обработку своих персональных данных
+                </a>
+                .
               </p>
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center mt-12">
-          <PinkButton
-            onClick={handleSendLessonOrder}
-            text={lesson.title === 'Заливка' ? 'Получить в подарок' : 'Отправить заявку'}
-          />
-          <p className="text-xs max-w-100 text-gray-600 mt-4 text-center">
-            Нажимая на кнопку, вы подтверждаете, что ознакомились с{' '}
-            <a href="#" className="text-(--color-primary) underline">
-              политикой конфиденциальности
-            </a>{' '}
-            и даете согласие на{' '}
-            <a href="#" className="text-(--color-primary) underline">
-              обработку своих персональных данных
-            </a>
-            .
-          </p>
-        </div>
-      </div>
-    </div>
   )
 }

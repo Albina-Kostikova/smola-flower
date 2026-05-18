@@ -30,17 +30,17 @@ export class TelegramService {
           inline_keyboard: [
             [
               {
-                text: '🚚 Shipped',
+                text: '🚚 Отправлено',
                 callback_data: `order_shipped_${order.id}`,
               },
               {
-                text: '✅ Done',
+                text: '✅ Сделано',
                 callback_data: `order_done_${order.id}`,
               },
             ],
             [
               {
-                text: '❌ Cancel',
+                text: '❌ Отменить',
                 callback_data: `order_cancel_${order.id}`,
               },
             ],

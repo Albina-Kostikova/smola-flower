@@ -28,16 +28,16 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
   const [isSticky, setIsSticky] = useState(false)
   const totalCount = useCartStore(state => state.totalCount)
 
- useEffect(() => {
-  const handleScroll = () => {
-    setIsSticky(prev => {
-      const next = window.scrollY > 0
-      return prev === next ? prev : next
-    })
-  }
-  window.addEventListener('scroll', handleScroll)
-  return () => window.removeEventListener('scroll', handleScroll)
-}, [])
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSticky(prev => {
+        const next = window.scrollY > 0
+        return prev === next ? prev : next
+      })
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
@@ -50,7 +50,7 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
   return (
     <>
       <header className="z-40">
-        <div className="flex w-full items-center justify-between bg-(--color-accent) px-4 text-white md:hidden">
+        <div className="flex w-full items-center justify-between bg-(--color-primary) px-4 text-white md:hidden">
           <button
             type="button"
             aria-label="Open menu"
@@ -63,7 +63,7 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
           <Link href="/">
             <Image
               src="/images/logosf.svg"
-              className="object-contain"
+              className="w-19 object-contain sm:w-25"
               alt="Smola Flowers"
               width={100}
               height={52}
@@ -73,9 +73,9 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
           </Link>
 
           <Link href="/cart" className="p-2 relative" aria-label="Корзина">
-            <Image src="/images/cart.svg" alt="Корзина" width={32} height={32} />
+            <Image src="/images/cart.svg" alt="Корзина" className="invert" width={32} height={32} />
             {totalCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full shadow-md">
+              <span className="absolute top-1 sm:-top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full shadow-md">
                 {totalCount > 99 ? '99+' : totalCount}
               </span>
             )}
@@ -160,18 +160,18 @@ export default function Header({ onCartClick }: { onCartClick: () => void }) {
 
       <aside
         id="header-mobile-sidebar"
-        className={`fixed right-0 top-0 z-50 flex h-dvh w-72 flex-col border-l border-pink-200 bg-white shadow-xl transition-transform md:hidden ${
-          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed left-0 top-0 z-50 flex h-dvh w-72 flex-col border-r border-pink-200 bg-white shadow-xl transition-transform md:hidden ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         aria-label="Mobile navigation">
         <div className="flex items-center justify-between border-b border-pink-100 px-4 py-3">
-          <span className="text-base font-semibold text-slate-700">Menu</span>
+          <span className="text-base font-semibold text-slate-700">Меню</span>
           <button
             type="button"
             aria-label="Close menu"
             onClick={() => setIsMobileMenuOpen(false)}
             className=" px-3 py-2 text-sm font-medium  transition ">
-            Close
+            Закрыть
           </button>
         </div>
 

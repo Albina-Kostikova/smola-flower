@@ -12,7 +12,7 @@ export class OrdersService {
     private telegramService: TelegramService,
   ) {}
 
-  async create(dto: CreateOrderDto): Promise<Order> {
+  async createOrder(dto: CreateOrderDto): Promise<Order> {
     const client = this.supabaseService.getClient()
 
 
@@ -106,7 +106,7 @@ if (items && items.length > 0) {
     return savedOrder as Order
   }
 
-  async findAll(): Promise<Order[]> {
+  async getAllOrders(): Promise<Order[]> {
     const { data, error } = await this.supabaseService
       .getClient()
       .from('orders')
@@ -120,7 +120,7 @@ if (items && items.length > 0) {
     return (data || []) as Order[]
   }
 
-  async findOne(id: string): Promise<Order> {
+  async getOrderById(id: string): Promise<Order> {
     const { data: order, error } = await this.supabaseService
       .getClient()
       .from('orders')
@@ -135,9 +135,7 @@ if (items && items.length > 0) {
     return order as Order
   }
 
-  async update(id: string, data: Partial<Order>): Promise<Order> {
-    const order = await this.findOne(id)
-
+  async updateOrder(id: string, data: Partial<Order>): Promise<Order> {
     const { data: updatedOrder, error } = await this.supabaseService
       .getClient()
       .from('orders')
@@ -153,9 +151,7 @@ if (items && items.length > 0) {
     return updatedOrder as Order
   }
 
-  async remove(id: string): Promise<void> {
-    const order = await this.findOne(id)
-
+  async deleteOrder(id: string): Promise<void> {
     const { error } = await this.supabaseService.getClient().from('orders').delete().eq('id', id)
 
     if (error) {

@@ -6,7 +6,7 @@ import { Note } from './notes.entity'
 export class NotesService {
   constructor(private supabaseService: SupabaseService) {}
 
-  async create(noteData: Partial<Note>): Promise<Note> {
+  async createNote(noteData: Partial<Note>): Promise<Note> {
     const { data, error } = await this.supabaseService
       .getClient()
       .from('notes')
@@ -21,7 +21,7 @@ export class NotesService {
     return data as Note
   }
 
-  async findAll(): Promise<Note[]> {
+  async getAllNotes(): Promise<Note[]> {
     const { data, error } = await this.supabaseService
       .getClient()
       .from('notes')
@@ -35,7 +35,7 @@ export class NotesService {
     return (data || []) as Note[]
   }
 
-  async findOne(id: string): Promise<Note> {
+  async getNoteById(id: string): Promise<Note> {
     const { data, error } = await this.supabaseService
       .getClient()
       .from('notes')
@@ -50,7 +50,7 @@ export class NotesService {
     return data as Note
   }
 
-  async update(id: string, updateData: Partial<Note>): Promise<Note> {
+  async updateNote(id: string, updateData: Partial<Note>): Promise<Note> {
     const { data, error } = await this.supabaseService
       .getClient()
       .from('notes')
@@ -66,7 +66,7 @@ export class NotesService {
     return data as Note
   }
 
-  async delete(id: string): Promise<void> {
+  async deleteNote(id: string): Promise<void> {
     const { error } = await this.supabaseService
       .getClient()
       .from('notes')

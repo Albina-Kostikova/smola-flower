@@ -14,7 +14,7 @@ export class CommentsService {
     private telegramService: TelegramService,
   ) {}
 
-  async create(commentData: Partial<Comment>): Promise<Comment> {
+  async createComment(commentData: Partial<Comment>): Promise<Comment> {
     const { data, error } = await this.supabaseService
       .getClient()
       .from('comments')
@@ -30,7 +30,7 @@ export class CommentsService {
   }
 
   async sendNotification(noteId: string, commentData: { name?: string; text?: string }): Promise<void> {
-    const note = await this.notesService.findOne(noteId)
+    const note = await this.notesService.getNoteById(noteId)
     await this.telegramService.sendCommentNotification({
       name: commentData.name || 'Аноним',
       text: commentData.text || '',
@@ -39,7 +39,7 @@ export class CommentsService {
     })
   }
 
-  async findByNoteId(noteId: string): Promise<Comment[]> {
+  async findCommentsByNoteId(noteId: string): Promise<Comment[]> {
     const { data, error } = await this.supabaseService
       .getClient()
       .from('comments')
@@ -54,7 +54,7 @@ export class CommentsService {
     return (data || []) as Comment[]
   }
 
-  async findAll(): Promise<Comment[]> {
+  async getAllComments(): Promise<Comment[]> {
     const { data, error } = await this.supabaseService
       .getClient()
       .from('comments')
@@ -68,7 +68,7 @@ export class CommentsService {
     return (data || []) as Comment[]
   }
 
-  async findOne(id: string): Promise<Comment> {
+  async getCommentById(id: string): Promise<Comment> {
     const { data, error } = await this.supabaseService.getClient().from('comments').select('*').eq('id', id).single()
 
     if (error || !data) {
@@ -77,8 +77,22 @@ export class CommentsService {
 
     return data as Comment
   }
+  async updateComment(id: string, updateData: Partial<Comment>): Promise<Comment> {
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('comments')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
 
-  async delete(id: string): Promise<void> {
+    if (error) {
+      throw new Error(`Failed to update comment: ${error.message}`)
+    }
+
+    return data as Comment
+  }
+  async deleteComment(id: string): Promise<void> {
     const { error } = await this.supabaseService.getClient().from('comments').delete().eq('id', id)
 
     if (error) {

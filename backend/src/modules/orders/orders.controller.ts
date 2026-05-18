@@ -9,17 +9,17 @@ export class OrdersController {
 
   @Post()
   create(@Body() dto: CreateOrderDto): Promise<Order> {
-    return this.ordersService.create(dto)
+    return this.ordersService.createOrder(dto)
   }
 
   @Get()
   findAll(): Promise<Order[]> {
-    return this.ordersService.findAll()
+    return this.ordersService.getAllOrders()
   }
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Order> {
-    return this.ordersService.findOne(id)
+    return this.ordersService.getOrderById(id)
   }
 
   @Patch(':id')
@@ -27,11 +27,11 @@ export class OrdersController {
     @Param('id') id: string,
     @Body() data: Partial<Order>,
   ): Promise<Order> {
-    return this.ordersService.update(id, data)
+    return this.ordersService.updateOrder(id, data)
   }
 
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
-    return this.ordersService.remove(id)
+    return this.ordersService.deleteOrder(id)
   }
 }

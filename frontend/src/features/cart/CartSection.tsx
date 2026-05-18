@@ -104,7 +104,8 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Неизвестная ошибка')
       setToast({
-        message: 'Произошла ошибка при отправке заказа. Пожалуйста, попробуйте ещё раз или свяжитесь с нами по телефону.',
+        message:
+          'Произошла ошибка при отправке заказа. Пожалуйста, попробуйте ещё раз или свяжитесь с нами по телефону.',
         type: 'error',
         visible: true,
       })
@@ -120,30 +121,30 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
 
   return (
     <>
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        isVisible={toast.visible}
-        onClose={closeToast}
-      />
+      <Toast message={toast.message} type={toast.type} isVisible={toast.visible} onClose={closeToast} />
 
       {isOpen && (
-        <section onClick={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <section
+          onClick={onClose}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
           <div
             onClick={e => e.stopPropagation()}
-            className="w-full max-h-[90vh] overflow-y-auto max-w-6xl rounded-4xl bg-white px-6 py-7">
-            <div className="relative w-full flex items-center justify-center border-b border-gray-300 mb-8 pb-3">
+            className="w-full max-h-screen overflow-y-auto max-w-6xl rounded-4xl bg-white px-4 sm:px-6 py-5 sm:py-7">
+            <div className="relative w-full flex items-center justify-center border-b border-gray-300 mb-6 sm:mb-8 pb-3">
               <h2>Корзина</h2>
-              <button title="Закрыть" onClick={onClose} className="absolute right-4 h-8 w-8 cursor-pointer hover:opacity-70">
+              <button
+                title="Закрыть"
+                onClick={onClose}
+                className="absolute right-2 sm:right-4 h-6 w-6 sm:h-8 sm:w-8 cursor-pointer hover:opacity-70">
                 <Image src="/images/cart-close.svg" alt="Закрыть" width={32} height={32} />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-8">
-              <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+              <div className="space-y-6 sm:space-y-8">
                 <div>
-                  <h3 className="tall tracking-wide mb-4 scale-y-110">Доставка</h3>
-                  <div className="space-y-3">
+                  <h3 className="tall tracking-wide mb-3 sm:mb-4 scale-y-110 text-xl sm:text-2xl">Доставка</h3>
+                  <div className="space-y-2 sm:space-y-3">
                     {deliveryOptions.map(option => (
                       <label key={option.value} className="flex items-center cursor-pointer">
                         <input
@@ -154,15 +155,15 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                           onChange={e => setDelivery(e.target.value)}
                           className="cursor-pointer w-4 h-4 accent-(--color-primary)"
                         />
-                        <span className="ml-3">{option.label}</span>
+                        <span className="ml-3 text-sm sm:text-base">{option.label}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="tall tracking-wide mb-4 scale-y-110">Способ оплаты</h3>
-                  <div className="space-y-3">
+                  <h3 className="tall tracking-wide mb-3 sm:mb-4 scale-y-110 text-xl sm:text-2xl">Способ оплаты</h3>
+                  <div className="space-y-2 sm:space-y-3">
                     {paymentOptions.map(option => (
                       <label key={option.value} className="flex items-center cursor-pointer">
                         <input
@@ -173,21 +174,21 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                           onChange={e => setPayment(e.target.value)}
                           className="cursor-pointer w-4 h-4 accent-(--color-primary)"
                         />
-                        <span className="ml-3">{option.label}</span>
+                        <span className="ml-3 text-sm sm:text-base">{option.label}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="tall tracking-wider scale-y-110">Контактные данные</h3>
+                <div className="space-y-3 sm:space-y-4">
+                  <h3 className="tall tracking-wider scale-y-110 text-xl sm:text-2xl">Контактные данные</h3>
                   <input
                     type="text"
                     name="fio"
                     placeholder="ФИО"
                     value={formData.fio}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 outline-none focus:border-(--color-primary) focus:text-(--color-primary) rounded-lg"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 outline-none focus:border-(--color-primary) focus:text-(--color-primary) rounded-lg text-sm sm:text-base"
                   />
 
                   <input
@@ -196,7 +197,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                     placeholder="Email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 outline-none focus:border-(--color-primary) focus:text-(--color-primary) rounded-lg"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 outline-none focus:border-(--color-primary) focus:text-(--color-primary) rounded-lg text-sm sm:text-base"
                   />
 
                   <input
@@ -205,7 +206,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                     placeholder="Номер телефона"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 outline-none focus:border-(--color-primary) focus:text-(--color-primary) rounded-lg"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 outline-none focus:border-(--color-primary) focus:text-(--color-primary) rounded-lg text-sm sm:text-base"
                   />
 
                   <input
@@ -214,37 +215,42 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                     placeholder="Адрес доставки"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 outline-none focus:border-(--color-primary) focus:text-(--color-primary) rounded-lg"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 outline-none focus:border-(--color-primary) focus:text-(--color-primary) rounded-lg text-sm sm:text-base"
                   />
                 </div>
               </div>
 
               <div>
-                <h3 className="tall tracking-wide mb-2 scale-y-110">Выбранные товары</h3>
+                <h3 className="tall tracking-wide mb-2 scale-y-110 text-xl sm:text-2xl">Выбранные товары</h3>
 
-                <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
+                <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6 max-h-60 sm:max-h-96 overflow-y-auto">
                   {items.length === 0 ? (
                     <p className="text-gray-500">Корзина пуста</p>
                   ) : (
                     items.map(item => (
-                      <div key={item.id} className="border-t border-gray-300 pt-4 flex items-center justify-between">
+                      <div
+                        key={item.id}
+                        className="border-t border-gray-300 pt-3 sm:pt-4 flex items-center justify-between">
                         <Image
                           src={item.img}
                           alt={item.title}
                           className="rounded-2xl object-cover"
-                          width={80}
-                          height={80}
-                          style={{ width: 80, height: 80 }}
+                          width={60}
+                          height={60}
+                          style={{ width: 60, height: 60 }}
                         />
-                        <div className="ml-4 flex-1">
-                          <h4 className="font-semibold">{item.title}</h4>
-                          <p className="text-sm text-gray-600">
+                        <div className="ml-2 sm:ml-4 flex-1">
+                          <h4 className="font-semibold text-sm sm:text-base">{item.title}</h4>
+                          <p className="text-xs sm:text-sm text-gray-600">
                             {item.price} ₽ x {item.quantity}
                           </p>
-                          <p className="font-semibold">{item.price * item.quantity} ₽</p>
+                          <p className="font-semibold text-sm sm:text-base">{item.price * item.quantity} ₽</p>
                         </div>
-                        <button onClick={() => removeFromCart(item.id)} title="Удалить" className="ml-4 hover:opacity-70">
-                          <Image alt="Удалить" src="/images/cart-close.svg" width={24} height={24} />
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          title="Удалить"
+                          className="ml-2 sm:ml-4 hover:opacity-70 shrink-0">
+                          <Image alt="Удалить" src="/images/cart-close.svg" width={20} height={20} />
                         </button>
                       </div>
                     ))
@@ -253,16 +259,16 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
 
                 {items.length > 0 && (
                   <>
-                    <div className="border-t border-gray-300 py-4">
-                      <div className="flex justify-between mb-2">
+                    <div className="border-t border-gray-300 py-3 sm:py-4">
+                      <div className="flex justify-between mb-2 text-sm sm:text-base">
                         <span>Сумма товаров:</span>
                         <span>{totalPrice} ₽</span>
                       </div>
-                      <div className="border-t border-gray-300 flex justify-between py-2">
+                      <div className="border-t border-gray-300 flex justify-between py-2 text-sm sm:text-base">
                         <span>Доставка:</span>
                         <span>{delivery === 'Самовывоз по Бугульме' ? 'бесплатно' : '200 ₽'}</span>
                       </div>
-                      <div className="border-t border-gray-300 pt-4 flex justify-between font-bold text-lg">
+                      <div className="border-t border-gray-300 pt-3 sm:pt-4 flex justify-between font-bold text-base sm:text-lg">
                         <span>Итого:</span>
                         <span>{delivery !== 'Самовывоз по Бугульме' ? totalPrice + 200 : totalPrice} ₽</span>
                       </div>
@@ -271,9 +277,9 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                       <PinkButton
                         onClick={handleSendOrder}
                         text={isLoading ? 'Отправка...' : 'Оформить заказ'}
-                        className={`mt-6 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
+                        className={`mt-4 sm:mt-6 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
                       />
-                      <p className="text-xs max-w-100 text-gray-600 mt-4 text-center">
+                      <p className="text-xs max-w-full sm:max-w-100 text-gray-600 mt-3 sm:mt-4 text-center">
                         Нажимая на кнопку, вы подтверждаете, что ознакомились с{' '}
                         <a href="#" className="text-(--color-primary) underline">
                           политикой конфиденциальности

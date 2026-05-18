@@ -21,15 +21,20 @@
   --color-accent: #f9ddea;
 }
 
+html {
+  overflow-x: hidden;
+}
 body {
   font-family: 'Roboto', sans-serif;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
-.cursive, h2 {
+.cursive,
+h2 {
   font-family: 'Good Vibes Pro', sans-serif;
-} 
+}
 .tall {
   font-family: 'Bebas Neue', sans-serif;
   transform: scaleY(1.1) scaleX(0.95);

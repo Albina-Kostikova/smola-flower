@@ -9,16 +9,16 @@ export class CommentsController {
   ) {}
 
   @Get(':noteId')
-  async findByNoteId(@Param('noteId') noteId: string): Promise<Comment[]> {
-    return this.commentsService.findByNoteId(noteId)
+  async findCommentsByNoteId(@Param('noteId') noteId: string): Promise<Comment[]> {
+    return this.commentsService.findCommentsByNoteId(noteId)
   }
 
   @Post()
-  async create(
+  async createComment(
     @Body() body: { noteId: string; name: string; text: string; avatar_seed: string; is_owner: boolean },
   ): Promise<Comment> {
     const { noteId, ...commentData } = body
-    const comment = await this.commentsService.create({ ...commentData, note_id: noteId })
+    const comment = await this.commentsService.createComment({ ...commentData, note_id: noteId })
 
     this.commentsService.sendNotification(noteId, commentData).catch(err => {
       console.error('Failed to send comment notification:', err)
@@ -28,7 +28,7 @@ export class CommentsController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
-    return this.commentsService.delete(id)
+  async deleteComment(@Param('id') id: string): Promise<void> {
+    return this.commentsService.deleteComment(id)
   }
 }

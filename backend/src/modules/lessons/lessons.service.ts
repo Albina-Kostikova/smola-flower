@@ -46,7 +46,30 @@ export class LessonsService {
 
     return data
   }
+  async updateLesson(id: string, lessonData: Lesson) {
+    const supabase = this.supabaseService.getClient()
+    const { data, error } = await supabase
+      .from('lessons')
+      .update(lessonData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to update lesson: ${error.message}`)
+    }
+
+    return data
+  }
   async deleteLesson(id: string) {
-    //Создать функции delete и другие с телеграма
+    const { error } = await this.supabaseService.getClient()
+    .from('lessons')
+    .delete()
+    .eq('id', id)
+
+    if (error) {
+      throw new Error(`Failed to delete lesson: ${error.message}`)
+    }
+    
   }
 }

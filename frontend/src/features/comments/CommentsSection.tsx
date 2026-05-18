@@ -88,8 +88,8 @@ export function CommentsSection({ noteId }: CommentsSectionProps) {
   }
 
   return (
-    <section className="bg-white rounded-2xl shadow-lg flex flex-col ml-3">
-      <div className="bg-(--color-accent) rounded-2xl text-grey pt-5 space-y-4 p-7">
+    <section className="bg-white rounded-2xl shadow-lg flex flex-col items-center lg:ml-3">
+      <div className="bg-(--color-accent) rounded-2xl w-full text-grey pt-5 space-y-4 p-7">
         <h4 className="text-lg font-semibold text-gray-800">Оставьте комментарий</h4>
 
         <div>

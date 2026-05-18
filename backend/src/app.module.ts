@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { TelegrafModule } from 'nestjs-telegraf'
 import { DatabaseModule } from './database/database.module'
 import { ProductsModule } from './modules/products/products.module'
 import { LessonsModule } from './modules/lessons/lessons.module'
@@ -12,6 +13,13 @@ import { TelegramModule } from './integrations/telegram/telegram.module'
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    TelegrafModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        token: configService.get<string>('TELEGRAM_BOT_TOKEN') || '',
+      }),
     }),
     DatabaseModule,
     ProductsModule,

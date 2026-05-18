@@ -60,72 +60,72 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   return (
     <section className="mx-auto w-full max-w-6xl px-4 pt-4 pb-8 overflow-x-hidden">
       <Breadcrumbs items={breadcrumbs} />
-      <div className="flex">
-        <div className="flex mr-8">
-          <button onClick={() => setSelectedImage(product.img)} className="flex mr-4 cursor-pointer" title="Увеличить">
+      <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col lg:flex-row lg:mr-8">
+          <button
+            onClick={() => setSelectedImage(product.img)}
+            className="flex lg:mr-4 cursor-pointer justify-center"
+            title="Увеличить">
             <Image
               src={product.img}
               alt={product.title}
-              className="object-cover rounded-4xl"
-              width={350}
-              height={350}
-              style={{ width: 355, height: 355 }}
+              className="object-cover rounded-4xl w-full h-auto lg:w-100 aspect-square"
+              width={345}
+              height={345}
               priority
             />
           </button>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-row lg:flex-col gap-3 lg:gap-4 mt-3 lg:mt-0 justify-center">
             <button
               onClick={() => setSelectedImage(product.img2 || product.img)}
-              className="cursor-pointer"
+              className="cursor-pointer flex-1 lg:flex-none lg:w-43 aspect-square"
               title="Увеличить">
               <Image
                 src={product.img2 || product.img}
-                className="rounded-2xl"
                 alt="Фото 2"
-                width={175}
-                height={170}
-                style={{ width: 170, height: 170 }}
+                width={180}
+                height={180}
+                className="w-full h-auto lg:w-43 lg:h-43 rounded-2xl object-cover"
               />
             </button>
             <button
               onClick={() => setSelectedImage(product.img3 || product.img)}
-              className="cursor-pointer"
+              className="cursor-pointer flex-1 lg:flex-none lg:w-43 aspect-square"
               title="Увеличить">
               <Image
                 src={product.img3 || product.img}
-                className="rounded-2xl"
                 alt="Фото 3"
-                width={175}
-                height={170}
-                style={{ width: 170, height: 170 }}
+                width={180}
+                height={180}
+                className="w-full h-auto lg:w-43 lg:h-43 rounded-2xl object-cover"
               />
             </button>
           </div>
         </div>
-        <div className="flex flex-col border border-gray-300 rounded-2xl p-9 leading-9">
-          <h1 className="text-3xl font-semibold">{product.title}</h1>
-          <div className="flex items-center gap-12 py-7">
-            <h3 className="tall text-4xl">
-              {product.price} <span className="text-2xl">₽</span>
+        <div className="flex flex-col border border-gray-300 rounded-2xl p-5 sm:p-7 lg:p-9 leading-7 lg:leading-9 mt-4 lg:mt-0">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">{product.title}</h1>
+          <div className="flex items-center gap-6 sm:gap-8 lg:gap-12 py-4 sm:py-5 lg:py-7 flex-wrap">
+            <h3 className="tall text-2xl sm:text-3xl lg:text-4xl">
+              {product.price} <span className="text-lg sm:text-xl lg:text-2xl">₽</span>
             </h3>
             <SquareButton text={product.stock === true ? 'В наличии' : 'На заказ'} />
           </div>
-          <p>
+          <p className="text-sm sm:text-base mb-2">
             <b>Техника исполнения:</b> {product.technic}
           </p>
-          <p>
+          <p className="text-sm sm:text-base mb-2">
             <b>Диаметр:</b> {product.diameter}
           </p>
-          <p>
+          <p className="text-sm sm:text-base mb-2">
             <b>Цвет:</b> {product.color}
           </p>
-          <p>
+          <p className="text-sm sm:text-base mb-2">
             <b>Форма:</b> {product.form}
           </p>
-          <p>
+          <p className="text-sm sm:text-base mb-2">
             <b>Отделка:</b> {product.material}
           </p>
-          <div className="border-t border-gray-300 pt-6">
+          <div className="border-t border-gray-300 pt-4 sm:pt-5 lg:pt-6">
             <PinkButton
               onClick={() =>
                 addToCart({

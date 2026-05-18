@@ -98,7 +98,7 @@ export default function BlogPage() {
     <section className="mx-auto w-full max-w-6xl px-4 py-8 space-y-8">
       <Breadcrumbs />
       <ArticleCard note={currentNote} />
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-4">
         <NotesList notes={notes} currentNoteId={currentNoteId} onNoteSelect={setCurrentNoteId} />
         <CommentsSection noteId={currentNoteId} />
       </div>

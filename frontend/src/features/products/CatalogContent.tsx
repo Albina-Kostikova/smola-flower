@@ -44,7 +44,7 @@ export const CatalogContent = ({ products }: Props) => {
   if (sortBy === 'category') {
     return (
       <section className="flex flex-col w-full">
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-6 -mt-5">
           <select
             title="Категории"
             value={sortBy}
@@ -65,11 +65,11 @@ export const CatalogContent = ({ products }: Props) => {
           return (
             <div key={category} id={categoryId} className="w-full flex flex-col justify-center">
               <h2 className="text-center mb-8 font-medium">{category}</h2>
-              <div className="mt-6 mb-15 grid w-full grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-6 mb-15 grid w-full grid-cols-2 gap-4 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((product: Product, index) => {
                   const isPriority = categoryIndex === 0 && index < 6
                   return (
-                    <Link className="block w-full" key={product.id} href={`/catalog/${product.id}`}>
+                    <Link className="block w-full place-items-center" key={product.id} href={`/catalog/${product.id}`}>
                       <ProductCard product={product} priority={isPriority} onAddToCart={handleAddToCart} />
                     </Link>
                   )
@@ -84,7 +84,7 @@ export const CatalogContent = ({ products }: Props) => {
 
   return (
     <section className="flex flex-col w-full">
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-end mb-6 -mt-5">
         <select
           title="Сортировка"
           value={sortBy}
@@ -101,7 +101,7 @@ export const CatalogContent = ({ products }: Props) => {
       {sortedProducts.length === 0 ? (
         <p className="text-center text-gray-500 py-10">Товары не найдены</p>
       ) : (
-        <div className="mt-6 mb-15 grid w-full grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 mb-15 grid w-full grid-cols-2 gap-4 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {sortedProducts.map((product: Product, index) => {
             const isPriority = index < 6
             return (

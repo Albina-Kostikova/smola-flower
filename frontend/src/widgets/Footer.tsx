@@ -11,7 +11,7 @@ const Footer = () => {
     { href: '/lessons', label: 'Обучение' },
   ]
   return (
-    <footer className="flex flex-col gap-3 items-center justify-center py-5 border-t bg-(--color-primary) text-white">
+    <footer className="flex flex-col gap-3 items-center justify-center py-5 px-4 lg:px-0 border-t bg-(--color-primary) text-white">
       <Link href="/" className="text-xl font-semibold tracking-tight ">
         <Image
           src="/images/logosf.svg"
@@ -23,16 +23,16 @@ const Footer = () => {
           priority
         />
       </Link>
-      <div className="flex items-center gap-12 whitespace-nowrap text-white uppercase">
+      <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 lg:gap-12 whitespace-nowrap text-white uppercase">
         {navItems.map(item => {
           return (
-            <Link key={item.href} href={item.href} className="py-2 text-base font-medium  transition ">
+            <Link key={item.href} href={item.href} className="py-2 text-sm lg:text-base font-medium transition ">
               {item.label}
             </Link>
           )
         })}
       </div>
-      <div className="flex items-center justify-center gap-10 mb-3 leading-6">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 lg:gap-10 mb-3 leading-6">
         <Link href="https://www.instagram.com/smola_flower" className="flex items-center gap-2">
           <Image
             className="contain"
@@ -53,7 +53,7 @@ const Footer = () => {
           <p>smola_flower@gmail.com</p>
         </Link>
       </div>
-      <div className="border-t border-white w-full"></div>
+      <div className="border-t border-white w-full max-w-md lg:max-w-none"></div>
       <div className="text-center">© 2026 все права защищены</div>
     </footer>
   )
