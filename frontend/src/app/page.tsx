@@ -97,7 +97,6 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Правый блок */}
           <div className="flex flex-col w-full lg:max-w-xl gap-3 lg:gap-0 lg:ml-8 mt-3 lg:mt-0">
             <div className="flex gap-3 lg:gap-0">
               <Link href="/gallery" className="inline-block flex-1">
@@ -192,7 +191,7 @@ export default async function Home() {
       </div>
 
       <div className="flex flex-col items-center max-w-full">
-        <h2>Обучение</h2>
+        <h2 className="my-5">Обучение</h2>
         <div className="w-full flex flex-col justify-center lg:flex-row bg-(--color-secondary) gap-5 lg:gap-7 py-10 lg:py-15 items-center px-4 lg:px-0">
           <div className="relative rounded-4xl w-full max-w-xs lg:w-87 h-auto lg:h-87 flex flex-col items-center bg-white py-8 lg:py-11 gap-4 lg:gap-5">
             <div className="absolute left-2 -top-5 text-[120px] lg:text-[175px] text-(--color-secondary) tall font-thin">
