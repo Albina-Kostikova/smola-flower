@@ -53,13 +53,13 @@ jspm_packages/
 .cache
 .parcel-cache
 
+
 .next
 
 .nuxt
 dist
 
 .cache/
-public
 
 .out
 .storybook-out
