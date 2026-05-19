@@ -1,6 +1,10 @@
 import type { Comment, CreateCommentDto } from '@/entities/comment'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+  process.env.BACKEND_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://localhost:3001'
 
 export async function getCommentsByNoteId(noteId: string): Promise<Comment[]> {
   const res = await fetch(`${API_URL}/api/comments/${noteId}`)

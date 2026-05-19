@@ -12,7 +12,14 @@ async function bootstrap() {
   app.enableCors({
     origin: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
-      : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', /^http:\/\/localhost:\d+$/],
+      : [
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'http://localhost:3002',
+          /^http:\/\/localhost:\d+$/,
+          'https://smola-flowers.vercel.app',
+          /^https:\/\/.*\.vercel\.app$/,
+        ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
