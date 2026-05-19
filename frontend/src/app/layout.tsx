@@ -9,6 +9,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const [isCartOpen, setIsCartOpen] = useState(false)
   return (
     <html lang="ru">
+      <head>
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+      </head>
       <body className="flex flex-col min-h-screen">
         <Header onCartClick={() => setIsCartOpen(true)} />
         <main className="grow flex flex-col justify-center">{children}</main>
