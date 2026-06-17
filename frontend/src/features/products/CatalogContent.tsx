@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { ProductCard, type Product } from '@/entities/product'
 import { useCartStore } from '@/features/cart/cart.store'
@@ -10,25 +10,24 @@ import { sortProducts, sortOptions, type SortOption } from './sorting'
 type Props = {
   products: Product[]
 }
+const CATEGORY_MAP = {
+  Вазочки: 'vazochki',
+  Серьги: 'sergi',
+  Кулоны: 'kulony',
+  Комплекты: 'komplekty',
+  Броши: 'broshi',
+  Сувениры: 'suveniry',
+} as const
+
+const CATEGORIES = Object.keys(CATEGORY_MAP)
 
 export const CatalogContent = ({ products }: Props) => {
   const { addToCart } = useCartStore()
   const [sortBy, setSortBy] = useState<SortOption>('category')
 
-  const categoryMap = {
-    Вазочки: 'vazochki',
-    Серьги: 'sergi',
-    Кулоны: 'kulony',
-    Комплекты: 'komplekty',
-    Броши: 'broshi',
-    Сувениры: 'suveniry',
-  }
-
-  const categories = ['Вазочки', 'Серьги', 'Кулоны', 'Комплекты', 'Броши', 'Сувениры']
-
   useScrollToHash(false)
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = useCallback((product: Product) => {
     addToCart({
       id: product.id,
       title: product.title,
@@ -37,9 +36,9 @@ export const CatalogContent = ({ products }: Props) => {
       img: product.img,
     })
     console.log('Товар добавлен в корзину:', product.title)
-  }
+  }, [addToCart])
 
-  const sortedProducts = sortProducts(products, sortBy)
+  const sortedProducts = useMemo(() => sortProducts(products, sortBy), [products, sortBy])
 
   if (sortBy === 'category') {
     return (
@@ -58,10 +57,10 @@ export const CatalogContent = ({ products }: Props) => {
           </select>
         </div>
 
-        {categories.map((category, categoryIndex) => {
+        {CATEGORIES.map((category, categoryIndex) => {
           const items = sortedProducts.filter((p: Product) => p.category === category)
           if (!items.length) return null
-          const categoryId = categoryMap[category as keyof typeof categoryMap]
+          const categoryId = CATEGORY_MAP[category as keyof typeof CATEGORY_MAP]
           return (
             <div key={category} id={categoryId} className="w-full flex flex-col justify-center">
               <h2 className="text-center mb-8 font-medium">{category}</h2>

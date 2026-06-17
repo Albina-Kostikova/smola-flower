@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useCartStore } from './cart.store'
 import { PinkButton } from '@/shared/ui/Buttons'
 import { Toast } from '@/shared/ui/Toast'
@@ -10,6 +10,17 @@ type CartSectionProps = {
   isOpen: boolean
   onClose: () => void
 }
+const DELIVERY_OPTIONS = [
+  { value: 'Самовывоз по Бугульме', label: 'Самовывоз по Бугульме' },
+  { value: 'Оzon, WB, Yandex', label: 'Оzon, WB, Yandex' },
+  { value: 'Почта России', label: 'Почта России' },
+]
+
+const PAYMENT_OPTIONS = [
+  { value: 'Перевод (СБП)', label: 'Перевод (СБП)' },
+  { value: 'Наличный расчет', label: 'Наличный расчет' },
+  { value: 'Другое', label: 'Другое' },
+]
 
 export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
   const { items, totalPrice, removeFromCart, clearCart } = useCartStore()
@@ -23,31 +34,26 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
     phone: '',
     address: '',
   })
+  const formDataRef = useRef(formData)
+  formDataRef.current = formData
   const [toast, setToast] = useState({
     message: '',
     type: 'success' as 'success' | 'error',
     visible: false,
   })
 
-  const deliveryOptions = [
-    { value: 'Самовывоз по Бугульме', label: 'Самовывоз по Бугульме' },
-    { value: 'Оzon, WB, Yandex', label: 'Оzon, WB, Yandex' },
-    { value: 'Почта России', label: 'Почта России' },
-  ]
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const { name, value } = e.currentTarget
+      setFormData(prev => ({ ...prev, [name]: value }))
+    },
+    [],
+  )
 
-  const paymentOptions = [
-    { value: 'Перевод (СБП)', label: 'Перевод (СБП)' },
-    { value: 'Наличный расчет', label: 'Наличный расчет' },
-    { value: 'Другое', label: 'Другое' },
-  ]
+  const handleSendOrder = useCallback(async () => {
+    const currentFormData = formDataRef.current
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.currentTarget
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleSendOrder = async () => {
-    if (!formData.fio || !formData.email || !formData.phone || !formData.address) {
+    if (!currentFormData.fio || !currentFormData.email || !currentFormData.phone || !currentFormData.address) {
       setError('Пожалуйста, заполните все поля')
       return
     }
@@ -63,10 +69,10 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
     try {
       const orderData = {
         customer: {
-          fio: formData.fio,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
+          fio: currentFormData.fio,
+          email: currentFormData.email,
+          phone: currentFormData.phone,
+          address: currentFormData.address,
         },
         delivery,
         payment,
@@ -114,7 +120,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [clearCart, onClose, delivery, items, totalPrice])
 
   const closeToast = useCallback(() => {
     setToast(prev => ({ ...prev, visible: false }))
@@ -146,7 +152,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                 <div>
                   <h3 className="tall tracking-wide mb-3 sm:mb-4 scale-y-110 text-xl sm:text-2xl">Доставка</h3>
                   <div className="space-y-2 sm:space-y-3">
-                    {deliveryOptions.map(option => (
+                    {DELIVERY_OPTIONS.map(option => (
                       <label key={option.value} className="flex items-center cursor-pointer">
                         <input
                           type="radio"
@@ -165,7 +171,7 @@ export const CartSection = ({ isOpen, onClose }: CartSectionProps) => {
                 <div>
                   <h3 className="tall tracking-wide mb-3 sm:mb-4 scale-y-110 text-xl sm:text-2xl">Способ оплаты</h3>
                   <div className="space-y-2 sm:space-y-3">
-                    {paymentOptions.map(option => (
+                    {PAYMENT_OPTIONS.map(option => (
                       <label key={option.value} className="flex items-center cursor-pointer">
                         <input
                           type="radio"

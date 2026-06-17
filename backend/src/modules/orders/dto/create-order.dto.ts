@@ -7,32 +7,26 @@ import {
   Min,
   MinLength,
   IsNotEmpty,
-  IsEnum,
   IsOptional,
 } from 'class-validator'
-
 import { Type } from 'class-transformer'
 
-export enum DeliveryMethod {
-  POST_RUSSIA = 'post_russia',
-  CDEK = 'cdek',
-  PICKUP = 'pickup',
-}
-
-export enum PaymentMethod {
-  CARD = 'card',
-  CASH = 'cash',
-  BANK_TRANSFER = 'bank_transfer',
-}
-
-class OrderProductDto {
+class CustomerDto {
   @IsString()
-  @IsNotEmpty()
-  productId!: string
+  @MinLength(2)
+  fio!: string
 
-  @IsNumber()
-  @Min(1)
-  quantity!: number
+  @IsEmail()
+  email!: string
+
+  @IsString()
+  @MinLength(5)
+  phone!: string
+
+  @IsString()
+  @MinLength(5)
+  @IsOptional()
+  address?: string
 }
 
 class CartItemDto {
@@ -53,42 +47,28 @@ class CartItemDto {
   quantity!: number
 }
 
-class CustomerDto {
+class SingleItemDto {
   @IsString()
-  @MinLength(2)
-  fio!: string
-
-  @IsEmail()
-  email!: string
+  @IsNotEmpty()
+  id!: string
 
   @IsString()
-  @MinLength(5)
-  phone!: string
+  @IsNotEmpty()
+  title!: string
 
   @IsString()
-  @MinLength(5)
-  address!: string
+  @IsOptional()
+  description?: string
+
+  @IsNumber()
+  @Min(0)
+  price!: number
 }
 
 export class CreateOrderDto {
-  @IsString()
-  @MinLength(2)
-  @IsOptional()
-  name?: string
-
-  @IsEmail()
-  @IsOptional()
-  email?: string
-
-  @IsString()
-  @MinLength(5)
-  @IsOptional()
-  phone?: string
-
-  @IsString()
-  @MinLength(5)
-  @IsOptional()
-  address?: string
+  @ValidateNested()
+  @Type(() => CustomerDto)
+  customer!: CustomerDto
 
   @IsString()
   @IsOptional()
@@ -100,20 +80,14 @@ export class CreateOrderDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => OrderProductDto)
-  @IsOptional()
-  products?: OrderProductDto[]
-
-  @ValidateNested()
-  @Type(() => CustomerDto)
-  @IsOptional()
-  customer?: CustomerDto
-
-  @IsArray()
-  @ValidateNested({ each: true })
   @Type(() => CartItemDto)
   @IsOptional()
   items?: CartItemDto[]
+
+  @ValidateNested()
+  @Type(() => SingleItemDto)
+  @IsOptional()
+  item?: SingleItemDto
 
   @IsNumber()
   @Min(0)

@@ -1,63 +1,63 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
+import { Injectable, BadRequestException } from '@nestjs/common'
 import { SupabaseService } from '../../database/supabase.service'
 import { TelegramService } from '../../integrations/telegram/telegram.service'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { Order } from './order.entity'
-import { Product } from '../products/products.entity'
+import { BaseService } from '../../database/base.service'
+
+interface OrderItem {
+  id: string
+  title: string
+  price: number
+  quantity: number
+}
 
 @Injectable()
-export class OrdersService {
+export class OrdersService extends BaseService<Order> {
   constructor(
-    private supabaseService: SupabaseService,
+    supabaseService: SupabaseService,
     private telegramService: TelegramService,
-  ) {}
+  ) {
+    super(supabaseService, 'orders')
+  }
 
   async createOrder(dto: CreateOrderDto): Promise<Order> {
     const client = this.supabaseService.getClient()
 
-
-    const isNewFormat = !!dto.customer
-    const name = isNewFormat ? dto.customer!.fio : dto.name
-    const email = isNewFormat ? dto.customer!.email : dto.email
-    const phone = isNewFormat ? dto.customer!.phone : dto.phone
-    const address = isNewFormat ? dto.customer!.address : dto.address
-    const items = isNewFormat ? dto.items : dto.products
-    const delivery = dto.delivery || 'unknown'
-    const payment = dto.payment || 'unknown'
-
-    if (!name || !email || !phone || !address || !items) {
-      throw new BadRequestException('Missing required order data')
+    const { customer, delivery = 'unknown', payment = 'unknown' } = dto
+    if (!customer) {
+      throw new BadRequestException('Missing customer data')
     }
+    const { fio: name, email, phone, address = 'не указан' } = customer
 
+    const isCart = !!dto.items && dto.items.length > 0
+    const isLesson = !!dto.item
+
+    if (!isCart && !isLesson) {
+      throw new BadRequestException('Missing items or item data')
+    }
+    
+    let items: OrderItem[] = []
     let total = 0
     let productsForTelegram: Array<{ name: string; quantity: number }> = []
 
-    if (isNewFormat && dto.items) {
-      total = dto.totalPrice || 0
-      productsForTelegram = dto.items.map(item => ({
+    if (isCart) {
+      items = dto.items!.map(item => ({
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        quantity: item.quantity,
+      }))
+      total = dto.totalPrice || items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      productsForTelegram = items.map(item => ({
         name: item.title,
         quantity: item.quantity,
       }))
-    } else if (dto.products) {
-      const productIds = dto.products.map(p => p.productId)
-      const { data: products, error: productsError } = await client.from('products').select('*').in('id', productIds)
-
-      if (productsError || !products || products.length === 0) {
-        throw new BadRequestException('Products not found')
-      }
-
-      productsForTelegram = dto.products.map(p => {
-        const product = (products as Product[]).find(x => x.id === p.productId)
-        if (!product) {
-          throw new BadRequestException(`Product ${p.productId} not found`)
-        }
-        const itemTotal = Number(product.price) * p.quantity
-        total += itemTotal
-        return {
-          name: product.title,
-          quantity: p.quantity,
-        }
-      })
+    } else if (isLesson) {
+      const { id, title, price } = dto.item!
+      items = [{ id, title, price, quantity: 1 }]
+      total = price
+      productsForTelegram = [{ name: title, quantity: 1 }]
     }
 
     const orderData = {
@@ -65,97 +65,50 @@ export class OrdersService {
       email,
       phone,
       address,
-      delivery,
-      payment,
+      delivery: isLesson ? 'lesson' : delivery,
+      payment: isLesson ? 'lesson' : payment,
       total,
       status: 'new',
     }
 
-    const { data: savedOrder, error: orderError } = await client.from('orders').insert([orderData]).select().single()
+    const { data: savedOrder, error: orderError } = await client
+      .from('orders')
+      .insert([orderData])
+      .select()
+      .single()
 
-if (orderError) {
-  throw new Error(`Failed to create order: ${orderError.message}`)
-}
+    if (orderError) {
+      throw new Error(`Failed to create order: ${orderError.message}`)
+    }
 
-if (items && items.length > 0) {
-  const orderItems = items.map((item: any) => ({
-    order_id: savedOrder.id,
-    product_id: item.id,
-    quantity: item.quantity || 1,
-  }))
+    if (items.length > 0) {
+      const orderItems = items.map((item: any) => ({
+        order_id: savedOrder.id,
+        product_id: item.id,
+        quantity: item.quantity || 1,
+        price: item.price,
+        title: item.title,
+      }))
 
-  const { error: itemsError } = await client.from('order-items').insert(orderItems)
+      const { error: itemsError } = await client.from('order-items').insert(orderItems)
 
-  if (itemsError) {
-    console.error('Failed to save order items:', itemsError)
-  }
-}
+      if (itemsError) {
+        console.error('Failed to save order items:', itemsError)
+      }
+    }
 
     await this.telegramService.sendOrderNotification({
       name,
       email,
       phone,
       address,
-      delivery,
-      payment,
+      delivery: isLesson ? 'Урок' : delivery,
+      payment: isLesson ? 'Оплата урока' : payment,
       total,
       products: productsForTelegram,
       id: savedOrder.id,
     })
 
     return savedOrder as Order
-  }
-
-  async getAllOrders(): Promise<Order[]> {
-    const { data, error } = await this.supabaseService
-      .getClient()
-      .from('orders')
-      .select('*')
-      .order('createdAt', { ascending: false })
-
-    if (error) {
-      throw new Error(`Failed to fetch orders: ${error.message}`)
-    }
-
-    return (data || []) as Order[]
-  }
-
-  async getOrderById(id: string): Promise<Order> {
-    const { data: order, error } = await this.supabaseService
-      .getClient()
-      .from('orders')
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (error || !order) {
-      throw new NotFoundException('Order not found')
-    }
-
-    return order as Order
-  }
-
-  async updateOrder(id: string, data: Partial<Order>): Promise<Order> {
-    const { data: updatedOrder, error } = await this.supabaseService
-      .getClient()
-      .from('orders')
-      .update(data)
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      throw new Error(`Failed to update order: ${error.message}`)
-    }
-
-    return updatedOrder as Order
-  }
-
-  async deleteOrder(id: string): Promise<void> {
-    const { error } = await this.supabaseService.getClient().from('orders').delete().eq('id', id)
-
-    if (error) {
-      throw new Error(`Failed to delete order: ${error.message}`)
-    }
   }
 }
