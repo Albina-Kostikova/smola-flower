@@ -26,9 +26,9 @@ export function MiniProductCard({ product, onAddToCart }: Props) {
         <Image src={product.img} alt={product.title} fill sizes="152px" className="object-cover" loading="lazy" />
 
         <div className="absolute inset-0 bg-pink-500/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-          <button onClick={handleViewProduct} className="cursor-pointer" title="Просмотр">
+          <div onClick={handleViewProduct} className="cursor-pointer" title="Просмотр">
             <PinkButton text="Просмотр" />
-          </button>
+          </div>
         </div>
       </div>
 

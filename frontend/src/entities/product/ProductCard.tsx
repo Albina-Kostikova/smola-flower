@@ -45,9 +45,9 @@ export const ProductCard = ({ product, priority = false, onAddToCart }: Props) =
         />
 
         <div className="absolute inset-0 bg-pink-500/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-          <button onClick={handleViewProduct} className="cursor-pointer" title="Просмотр">
+          <div onClick={handleViewProduct} className="cursor-pointer" title="Просмотр">
             <PinkButton text="Просмотр" />
-          </button>
+          </div>
         </div>
       </div>
 
@@ -57,9 +57,9 @@ export const ProductCard = ({ product, priority = false, onAddToCart }: Props) =
       <h4 className="tall scale-x-90 text-xl sm:text-4xl text-black">
         {product.price} <span className="text-sm sm:text-2xl">₽</span>
       </h4>
-      <button onClick={handleAddToCart} className="cursor-pointer mt-1 sm:mt-2" title="В корзину">
+      <div onClick={handleAddToCart} className="cursor-pointer mt-1 sm:mt-2" title="В корзину">
         <PinkButton text="В корзину" />
-      </button>
+      </div>
     </div>
   )
 }
